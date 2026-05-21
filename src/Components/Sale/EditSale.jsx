@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FaInfinity } from "react-icons/fa6";
 import { IoMdCloseCircle } from "react-icons/io";
 import { MdRefresh } from "react-icons/md";
@@ -41,6 +41,7 @@ const EditSale = () => {
   const [selectedSR, setSelectedSR] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedProducts, setSelectedProducts] = useState([]);
+  const selectedProductsRef = useRef(selectedProducts);
   const [searchProductKeyword, setSearchProductKeyword] = useState("");
   const [searchCustomerKeyword, setSearchCustomerKeyword] = useState("");
   const { setGlobalLoader } = loadingStore();
@@ -257,6 +258,20 @@ const EditSale = () => {
   const getValidSelectedSerials = (p) =>
     (p.selectedSerials ?? []).filter(hasValidSerial);
 
+  const formatSerialsFromSaleLine = (serialNos, productLineID) =>
+    (Array.isArray(serialNos) ? serialNos : [])
+      .filter(hasValidSerial)
+      .map((s) => ({
+        _id: s._id,
+        serialNo: s.serialNo,
+        value: s.serialNo,
+        label: s.serialNo,
+        productLineID,
+      }));
+
+  const needsStockRefresh = (p) =>
+    p && !productHasSerialUI(p) && p.manageStock !== 0;
+
   const applyStockToRow = (row, allStocks, rowIndex, rows) => {
     const productId = getStockProductId(row);
     const availableStockList = getAvailableStockList(
@@ -304,7 +319,8 @@ const EditSale = () => {
   const hydrateProductsWithStock = async (rows) => {
     return Promise.all(
       rows.map(async (row, rowIndex) => {
-        if (row.serials?.length > 0) return row;
+        if (productHasSerialUI(row)) return row;
+        if (row.stocks?.length > 0 && row.selectedStock?.length > 0) return row;
 
         const stocks = await fetchProductStocksByProductID(row, {
           silent: true,
@@ -465,22 +481,22 @@ const EditSale = () => {
       // Products
       if (data.Products?.length > 0) {
         const mapped = data.Products.map((p) => {
-          const hasSerials = p.serialNos?.length > 0;
-          const formattedSerials = hasSerials
-            ? p.serialNos.map((s) => ({
-                _id: s._id,
-                serialNo: s.serialNo,
-                value: s.serialNo,
-                label: s.serialNo,
-                productLineID: p.productLineID,
-              }))
-            : [];
+          const formattedSerials = formatSerialsFromSaleLine(
+            p.serialNos,
+            p.productLineID,
+          );
+          const hasSerials = formattedSerials.length > 0;
+          // API Products[].stock → selectedProducts[].stocks (Stocks table column)
+          const stocks = formatStockOptions(p.stock);
+          const selectedStock =
+            stocks.find((s) => s._id === p.productLineID) || stocks[0];
 
           const productId = p.productID || p.productId || p.id;
 
-          return {
+          const base = {
             _id: productId,
             productID: productId,
+            saleProductID: p.saleProductID,
             name: p.name,
             label: p.name,
             price: p.price,
@@ -488,20 +504,24 @@ const EditSale = () => {
             total: p.total,
             warranty: p.warranty || 0,
             productLineID: p.productLineID,
-            manageStock: hasSerials ? 1 : undefined,
-            unitCost: p.unitCost || 0,
+            unitCost: p.unitCost || selectedStock?.unitCost || 0,
             decimal: p.decimal || 0,
-            dp: p.dp || 0,
-            stocks: [],
-            selectedStock: [],
-            ...(hasSerials
-              ? {
-                  serials: formattedSerials,
-                  selectedSerials: formattedSerials,
-                  qtySold: p.serialNos.length,
-                }
-              : {}),
+            dp: p.dp ?? selectedStock?.dp ?? 0,
+            stocks,
+            selectedStock: selectedStock ? [selectedStock] : [],
+            manageStock: hasSerials || stocks.length > 0 ? 1 : undefined,
           };
+
+          if (hasSerials) {
+            return {
+              ...base,
+              serials: formattedSerials,
+              selectedSerials: formattedSerials,
+              qtySold: formattedSerials.length,
+            };
+          }
+
+          return base;
         });
         const stockCheckedProducts = await hydrateProductsWithStock(mapped);
         setSelectedProducts(stockCheckedProducts);
@@ -1150,9 +1170,8 @@ const EditSale = () => {
   };
 
   const refreshStock = async (idx) => {
-    const product = selectedProducts[idx];
-    if (!product || productHasSerialUI(product) || product.manageStock === 0)
-      return;
+    const product = selectedProductsRef.current[idx];
+    if (!needsStockRefresh(product)) return;
 
     setRefreshingStockIdx(idx);
     try {
@@ -1430,19 +1449,8 @@ const EditSale = () => {
     }
   };
 
-  // auto refresh stock from API after 5 sec
   useEffect(() => {
-    if (selectedProducts.length === 0) return;
-
-    const timeoutId = setTimeout(async () => {
-      for (let idx = 0; idx < selectedProducts.length; idx++) {
-        const p = selectedProducts[idx];
-        if (productHasSerialUI(p) || p.manageStock === 0) continue;
-        await refreshStock(idx);
-      }
-    }, 2000);
-
-    return () => clearTimeout(timeoutId);
+    selectedProductsRef.current = selectedProducts;
   }, [selectedProducts]);
 
   return (
@@ -1760,24 +1768,6 @@ const EditSale = () => {
                                   : "No stock loaded"}
                               </span>
                             )}
-                            <button
-                              type="button"
-                              title="Check stock from server"
-                              disabled={refreshingStockIdx === idx}
-                              onClick={() => {
-                                refreshStock(idx);
-                              }}
-                              className={`stock-refresh-button${p._id} shrink-0 p-1 rounded text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition disabled:opacity-40`}
-                            >
-                              {/* <MdRefresh
-                                size={18}
-                                className={
-                                  refreshingStockIdx === idx
-                                    ? "animate-spin"
-                                    : ""
-                                }
-                              /> */}
-                            </button>
                           </div>
                           {/* {p.selectedStock?.[0] && (
                             <p className="text-xs text-gray-600 dark:text-gray-400">
