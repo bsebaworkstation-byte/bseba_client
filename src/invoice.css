@@ -1,0 +1,36 @@
+/* Make sure only print-area content prints */
+.print-area {
+  width: 100%;
+  max-width: 320px; /* typical 80mm printer width */
+  font-size: 12px;
+  font-family: monospace;
+  padding: 4px;
+}
+
+@media print {
+  body * {
+    visibility: hidden; /* hide everything */
+  }
+  .print-area, .print-area * {
+    visibility: visible;
+  }
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+  }
+  .print-area hr {
+    border: 0.5px solid #000;
+    margin: 2px 0;
+  }
+  #no-print {
+    display: none;
+  }
+  .print-area div {
+    page-break-inside: avoid;
+  }
+}

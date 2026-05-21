@@ -1,0 +1,381 @@
+@import "tailwindcss";
+
+/* Chrome, Safari, Edge */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+body {
+  background-color: white;
+  color: rgb(24, 24, 24);
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: black;
+    color: rgb(0, 0, 0);
+  }
+}
+
+@layer components {
+  .global_container {
+    @apply lg:p-6 p-2 bg-white/20 dark:bg-gray-900/20 
+           rounded-2xl border border-white/30 dark:border-gray-700/30 
+           shadow-lg mb-2;
+  }
+
+  /* backdrop-blur-sm */
+  .global_sub_container {
+    @apply bg-white/20 dark:bg-gray-900/20 shadow-md rounded-2xl p-2 lg:p-6 mb-8 transition-all duration-300 ring-2 ring-blue-500;
+  }
+
+  /* added by Saiful  */
+  .global_heading {
+    @apply text-xl font-semibold mb-3;
+  }
+  .global_dropdown {
+    @apply px-3 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-2xl 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 
+    dark:bg-gray-700 dark:text-white text-sm;
+  }
+  .global_input {
+    @apply w-full border border-gray-300 dark:border-gray-600 rounded-2xl px-4 py-1 focus:ring-2 focus:ring-green-500 outline-none;
+  }
+  .global_button {
+    @apply border-2 hover:ring-2 capitalize text-green-500 font-semibold py-[2px] px-4 rounded-2xl shadow-md transition text-nowrap h-fit w-fit;
+  }
+  .global_button_red {
+    @apply border-2 hover:ring-2 capitalize text-red-500 font-semibold py-[2px] px-4 rounded-2xl shadow-md transition text-nowrap h-fit w-fit;
+  }
+
+  .global_edit {
+    @apply border-2 border-amber-400 capitalize text-zinc-500 dark:text-white font-[500] py-[2px] px-4 rounded-2xl shadow-md transition text-nowrap h-fit w-fit;
+  }
+  .global_list_item {
+    @apply border border-white/30 dark:border-gray-700/50
+    pl-3 pr-[6px] py-1 text-sm rounded-2xl
+    flex justify-between items-center
+    bg-white/40 dark:bg-gray-800/40
+    backdrop-blur-md
+    shadow-sm
+    hover:shadow-md transition-shadow;
+  }
+}
+
+/* Input er jonno */
+.large_input {
+  @apply rounded-2xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-3 backdrop-blur-2xl focus:ring-blue-500 w-full;
+}
+
+.small_input {
+  @apply rounded-2xl border border-gray-300 px-2 py-[3px] text-sm text-[#646464] dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+/* button er jonno */
+.large_button {
+  @apply flex items-center justify-center gap-5 rounded-2xl bg-green-500 text-white py-2 px-5 hover:bg-green-400 capitalize font-[500];
+}
+
+.small_button {
+  @apply flex items-center gap-5 rounded-2xl bg-orange-500 text-white py-1 px-5 hover:bg-orange-400 text-sm font-[500] capitalize w-fit;
+}
+
+.global_th {
+  @apply px-3 py-1 lg:py-2 bg-blue-500 text-white dark:bg-blue-950 text-left text-xs font-[500] uppercase tracking-wider border border-gray-300 dark:border-gray-700;
+}
+.global_thead {
+  @apply bg-gradient-to-r from-blue-500 to-indigo-800 dark:from-[#040036] dark:to-[#010f16];
+}
+.global_tbody {
+  @apply bg-white dark:bg-gray-800 divide-gray-200 dark:divide-green-700;
+}
+.global_table {
+  @apply min-w-full divide-y divide-gray-200 dark:divide-gray-700 rounded-lg shadow-md;
+}
+.global_tr {
+  @apply hover:bg-gray-50  
+  transition-colors duration-150 
+  odd:bg-white even:bg-green-50 
+  dark:odd:bg-gray-900 dark:even:bg-gray-800;
+}
+
+.global_td {
+  @apply px-1 py-1 lg:py-2 text-sm font-medium whitespace-normal border border-gray-300 dark:border-gray-700;
+}
+.global_print_th {
+  @apply bg-[#006D2B] text-white px-1 py-2 text-xs font-medium uppercase tracking-wider;
+}
+/* Dark mode css for date picker */
+/* Dark mode overrides */
+.dark .react-datepicker {
+  background-color: #1f2937; /* bg-gray-800 */
+  border-color: #374151; /* border-gray-700 */
+  color: #f9fafb;
+  /* text-gray-100 */
+}
+.react-datepicker-wrapper {
+  width: 100% !important;
+}
+
+.react-datepicker__input-container {
+  width: 100% !important;
+}
+
+.react-datepicker__input-container input {
+  width: 100% !important;
+}
+
+.dark .react-datepicker__day {
+  color: #d1d5db; /* text-gray-300 */
+}
+
+.dark .react-datepicker__day:hover {
+  background-color: #374151; /* hover:bg-gray-700 */
+  color: #180f0f;
+}
+
+.dark .react-datepicker__day--selected,
+.dark .react-datepicker__day--keyboard-selected {
+  background-color: #2563eb; /* bg-blue-600 */
+  color: white;
+}
+
+.dark .react-datepicker__header {
+  background-color: #111827; /* bg-gray-900 */
+  border-bottom-color: #374151;
+}
+
+.dark .react-datepicker__current-month,
+.dark .react-datepicker__day-name {
+  color: #f3f4f6; /* text-gray-100 */
+}
+
+/* ===== Scrollbar Styles ===== */
+/* Light mode scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #adf59a;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8de57a;
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-track {
+  background: #374151; /* gray-700 */
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #10b981; /* emerald-500 */
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #059669; /* emerald-600 */
+}
+
+/* Firefox scrollbar styles */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #adf59a #f1f1f1;
+}
+
+/* Firefox dark mode */
+.dark * {
+  scrollbar-color: #10b981 #374151;
+}
+
+/* Smooth transitions for theme changes */
+*,
+*::before,
+*::after {
+  transition-property: color, background-color, border-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+/* Custom scrollbar for sidebar */
+.sidebar-scroll::-webkit-scrollbar {
+  width: 3px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.dark .sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #6b7280;
+}
+
+/* For Print Varias content */
+@media print {
+  @page {
+    margin: 0;
+    size: auto;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+  #no-print {
+    display: none !important;
+  }
+}
+
+/* React Select */
+/* Control (container) */
+.react-select__control {
+  @apply bg-white text-gray-900 border-gray-300;
+  border-radius: 9999px !important;
+}
+.dark .react-select__control {
+  @apply bg-gray-800 text-white border-gray-600 rounded-full;
+}
+/* Menu (dropdown list) */
+.react-select__menu {
+  @apply bg-white text-gray-900;
+}
+.dark .react-select__menu {
+  @apply bg-gray-800 text-white;
+}
+/* Option */
+.react-select__option {
+  @apply cursor-pointer text-gray-900;
+}
+.dark .react-select__option {
+  @apply text-white;
+}
+/* Option hover/focus */
+.react-select__option--is-focused {
+  @apply bg-gray-200;
+}
+.dark .react-select__option--is-focused {
+  @apply bg-gray-700;
+}
+/* Single value (selected item) */
+.react-select__single-value {
+  @apply text-gray-900;
+}
+.dark .react-select__single-value {
+  @apply text-white;
+}
+/* Placeholder */
+.react-select__placeholder {
+  @apply text-gray-500;
+}
+.dark .react-select__placeholder {
+  @apply text-gray-400;
+}
+/* Typed input text */
+/* Input text while typing */
+.react-select__input input {
+  color: #111827 !important; /* Light mode -> text-gray-900 */
+}
+
+.dark .react-select__input input {
+  color: #ffffff !important; /* Dark mode -> white */
+}
+
+@media print {
+  /* ---------------------------
+     GLOBAL PRINT RESET
+  ---------------------------- */
+  * {
+    overflow: visible !important;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  /* ---------------------------
+     CONTAINER FIX
+  ---------------------------- */
+  .h-\[55vh\] {
+    height: auto !important;
+  }
+
+  /* ---------------------------
+     TABLE PAGE BREAK CONTROL
+  ---------------------------- */
+
+  table {
+    page-break-inside: auto;
+    page-break-after: auto;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tfoot {
+    display: table-footer-group;
+  }
+
+  tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    page-break-after: auto;
+  }
+
+  /* ---------------------------
+     GROUPED ROWS (IF USED)
+  ---------------------------- */
+  .print-group {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .print-group tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* ---------------------------
+     BLANK SPACE (KEEP IN PRINT)
+  ---------------------------- */
+  /* Default: blank space auto */
+  .print-blank-space {
+    height: auto !important;
+    min-height: 0; /* default 0, যদি product full page হয় */
+  }
+
+  /* Only when product is few, force minimum blank space */
+  .print-blank-space.short {
+    min-height: 120px; /* adjust as needed */
+  }
+
+  /* ---------------------------
+     FOOTER FIX
+  ---------------------------- */
+  .print-footer {
+    position: static !important;
+  }
+}
+
+
+
+

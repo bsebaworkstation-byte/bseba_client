@@ -1,0 +1,92 @@
+.slider-wrapper {
+  width: 100%;
+  padding: 10px 0; /* থাম্ব যাতে কেটে না যায় তার জন্য প্যাডিং */
+}
+
+/* Header */
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.slider-value {
+  font-weight: bold;
+  color: #ff9800;
+}
+
+/* Track Container */
+.slider-container {
+  position: relative;
+  height: 20px; /* ইনপুট এবং ট্র্যাকের জন্য নির্দিষ্ট উচ্চতা */
+  display: flex;
+  align-items: center;
+}
+
+/* Custom Visual Track */
+.slider-track {
+  width: 100%;
+  height: 6px;
+  background: #2c2c2c;
+  border-radius: 10px;
+  position: absolute;
+  pointer-events: none; /* যাতে ক্লিকের বাধা না দেয় */
+}
+
+/* Progress Bar */
+.slider-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #ff9800, #ff5722);
+  border-radius: 10px;
+}
+
+/* Invisible Range Input */
+.slider-input {
+  position: relative;
+  width: 100%;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  z-index: 2; /* থাম্বকে সবার উপরে রাখবে */
+  margin: 0;
+}
+
+/* Chrome/Safari Thumb */
+.slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 18px;
+  width: 18px;
+  background: #ff5722;
+  border: 3px solid white;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(255, 87, 34, 0.6);
+  transition: transform 0.2s ease-in-out;
+  margin-top: 0; /* সেন্টারে রাখার জন্য */
+}
+
+/* Firefox Thumb */
+.slider-input::-moz-range-thumb {
+  height: 18px;
+  width: 18px;
+  background: #ff5722;
+  border: 3px solid white;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(255, 87, 34, 0.6);
+  top: 4px;
+}
+
+.slider-input:hover::-webkit-slider-thumb {
+  transform: scale(1.2);
+}
+
+/* Remove default track styles */
+.slider-input::-webkit-slider-runnable-track {
+  background: transparent;
+}
+.slider-input::-moz-range-track {
+  background: transparent;
+}

@@ -1,0 +1,273 @@
+/* Tailwind CSS 4 Print Utilities - Add to index.css */
+
+/* Print Page Setup */
+@media print {
+  @page {
+    size: A4;
+    margin: 1cm;
+  }
+
+  /* Global Print Reset */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+/* Print Visibility Utilities */
+.print-hidden {
+  @media print {
+    display: none !important;
+  }
+}
+
+.print-visible {
+  @media screen {
+    display: none !important;
+  }
+  @media print {
+    display: block !important;
+  }
+}
+
+.print-only {
+  display: none;
+  @media print {
+    display: block !important;
+  }
+}
+
+.screen-only {
+  @media print {
+    display: none !important;
+  }
+}
+
+/* Print Content Area */
+.print-area {
+  @media print {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    visibility: visible !important;
+  }
+}
+
+/* Hide everything except print area */
+.print-mode {
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+
+    .print-area,
+    .print-area * {
+      visibility: visible;
+    }
+  }
+}
+
+/* Print Table Styles */
+.print-table {
+  @media print {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    font-size: 12px !important;
+  }
+}
+
+.print-table th,
+.print-table td {
+  @media print {
+    border: 1px solid #000 !important;
+    padding: 6px !important;
+    text-align: left !important;
+    page-break-inside: avoid;
+  }
+}
+
+.print-table th {
+  @media print {
+    background-color: #f5f5f5 !important;
+    font-weight: bold !important;
+  }
+}
+
+/* Print Typography */
+.print-title {
+  @media print {
+    font-size: 18px !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    margin-bottom: 20px !important;
+  }
+}
+
+.print-subtitle {
+  @media print {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    margin-bottom: 10px !important;
+  }
+}
+
+.print-text {
+  @media print {
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+    color: #000 !important;
+  }
+}
+
+/* Print Layout */
+.print-header {
+  @media print {
+    text-align: center !important;
+    border-bottom: 2px solid #000 !important;
+    padding-bottom: 10px !important;
+    margin-bottom: 20px !important;
+  }
+}
+
+.print-footer {
+  @media print {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 10px;
+    border-top: 1px solid #000;
+    padding-top: 5px;
+  }
+}
+
+/* Print Spacing */
+.print-mb-1 {
+  @media print {
+    margin-bottom: 0.25rem !important;
+  }
+}
+
+.print-mb-2 {
+  @media print {
+    margin-bottom: 0.5rem !important;
+  }
+}
+
+.print-mb-4 {
+  @media print {
+    margin-bottom: 1rem !important;
+  }
+}
+
+.print-mt-4 {
+  @media print {
+    margin-top: 1rem !important;
+  }
+}
+
+/* Print Colors */
+.print-text-black {
+  @media print {
+    color: #000 !important;
+  }
+}
+
+.print-bg-gray {
+  @media print {
+    background-color: #f5f5f5 !important;
+  }
+}
+
+/* Print Borders */
+.print-border {
+  @media print {
+    border: 1px solid #000 !important;
+  }
+}
+
+.print-border-b {
+  @media print {
+    border-bottom: 1px solid #000 !important;
+  }
+}
+
+/* Print Page Breaks */
+.print-page-break-before {
+  @media print {
+    page-break-before: always;
+  }
+}
+
+.print-page-break-after {
+  @media print {
+    page-break-after: always;
+  }
+}
+
+.print-no-break {
+  @media print {
+    page-break-inside: avoid;
+  }
+}
+
+/* Print Flexbox */
+.print-flex {
+  @media print {
+    display: flex !important;
+  }
+}
+
+.print-justify-between {
+  @media print {
+    justify-content: space-between !important;
+  }
+}
+
+.print-items-center {
+  @media print {
+    align-items: center !important;
+  }
+}
+
+/* Print Width */
+.print-w-full {
+  @media print {
+    width: 100% !important;
+  }
+}
+
+.print-w-1\/2 {
+  @media print {
+    width: 50% !important;
+  }
+}
+
+/* Common Print Button Hide */
+.btn,
+.button,
+[class*="btn-"],
+[class*="button-"] {
+  @media print {
+    display: none !important;
+  }
+}
+
+/* Override for specific print buttons */
+.print-btn {
+  @media print {
+    display: none !important;
+  }
+}
+
+/* Print Summary Box */
+.print-summary {
+  @media print {
+    border: 2px solid #000 !important;
+    padding: 10px !important;
+    margin: 20px 0 !important;
+    background-color: #f9f9f9 !important;
+  }
+}
