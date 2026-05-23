@@ -33,6 +33,7 @@ const EditSale = () => {
     document.documentElement.classList.contains("dark"),
   );
   const [customerModal, setCustomerModal] = useState(false);
+  const [oldGrandTotal, setOldGrandTotal] = useState(0);
   const [accounts, setAccounts] = useState([]);
   const [selectedAccounts, setSelectedAccounts] = useState([]);
   const [products, setProducts] = useState([]);
@@ -259,6 +260,9 @@ const EditSale = () => {
     productLineID: s.productLineID ?? productLineID,
   });
 
+  const resolveSerialUnitPrice = (serial, product) =>
+    Number(serial?.mrp ?? serial?.price ?? product?.price ?? 0) || 0;
+
   const mergeSerialOptions = (serials, serialNos, productLineID) => {
     const merged = [
       ...(Array.isArray(serials) ? serials : []),
@@ -480,6 +484,7 @@ const EditSale = () => {
         setDiscount(data.discount);
         // derive percent if total is available
       }
+      setOldGrandTotal(data.grandTotal);
       if (data.outher) setOtherCostName(data.outher);
       if (data.outherAmount) setCost(data.outherAmount);
       if (data.BillTo) setBillTo(data.BillTo);
@@ -1015,8 +1020,12 @@ const EditSale = () => {
   );
 
   const dueAmount = useMemo(
-    () => grandTotal - (paidAmount || 0) - (selectedCustomer?.balance || 0),
-    [grandTotal, paidAmount, selectedCustomer],
+    () =>
+      oldGrandTotal +
+      (grandTotal - oldGrandTotal) -
+      (paidAmount || 0) -
+      (selectedCustomer?.balance || 0),
+    [grandTotal, paidAmount, selectedCustomer, oldGrandTotal],
   );
 
   const invoiceDue = useMemo(
@@ -1441,7 +1450,7 @@ const EditSale = () => {
         total: totalPrice,
         discount: discount || 0,
         grandTotal: grandTotal,
-        CreatedDate: purchaseDate,
+        EditDate: purchaseDate,
         note: note,
         ...(otherCostName ? { outher: otherCostName, outherAmount: cost } : {}),
         ...(selectedSR ? { srID: selectedSR.value } : {}),
@@ -1591,25 +1600,7 @@ const EditSale = () => {
                 </div>
               </div>
             )}
-            <div className="w-1/2 flex flex-col text-center">
-              <label className="text-sm font-medium">{btn("sendSms")}</label>
 
-              <div className="flex justify-center">
-                <button
-                  type="button"
-                  onClick={() => setSendSMS(!sendSMS)}
-                  className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors duration-300 ${
-                    sendSMS ? "bg-green-500" : "bg-gray-300"
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-300 ${
-                      sendSMS ? "translate-x-4" : "translate-x-1"
-                    }`}
-                  />
-                </button>
-              </div>
-            </div>
             {can("ProfitOnSale") && (
               <div className="w-1/2 flex flex-col text-center group">
                 <label className="text-sm font-medium">
@@ -1797,19 +1788,6 @@ const EditSale = () => {
                               </span>
                             )}
                           </div>
-                          {/* {p.selectedStock?.[0] && (
-                            <p className="text-xs text-gray-600 dark:text-gray-400">
-                              Available:{" "}
-                              <span className="font-semibold text-green-700 dark:text-green-400">
-                                {p.selectedStock[0].stock ?? 0}
-                              </span>
-                              {p.selectedStock[0].mrp != null && (
-                                <span className="ml-2">
-                                  MRP: {p.selectedStock[0].mrp}
-                                </span>
-                              )}
-                            </p>
-                          )} */}
                         </div>
                       )}
                     </td>
@@ -2197,7 +2175,7 @@ const EditSale = () => {
                 value={cost}
                 disabled={otherCostName === ""}
                 onChange={(e) => {
-                  const value = e.target.value;
+                  const value = e.target.vagrandTotale;
                   setCost(value === "" ? "" : parseInt(value, 10));
                 }}
                 className={`global_input w-40 rounded-sm text-right ${

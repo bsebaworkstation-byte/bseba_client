@@ -148,9 +148,11 @@ const NewSale = () => {
         setProducts(
           raowProducts.map((p) => ({
             value: p._id,
-            label: `${p.name} (${p.Brands.name}) (${p.Categories.name
-              }) (stock - ${p.manageStock === 0 ? "∞" : p.qty})(Barcode ${p.barcode
-              })`,
+            label: `${p.name} (${p.Brands.name}) (${
+              p.Categories.name
+            }) (stock - ${p.manageStock === 0 ? "∞" : p.qty})(Barcode ${
+              p.barcode
+            })`,
             ...p,
             isDisabled: p.manageStock === 1 && p.qty === 0,
           })),
@@ -170,10 +172,11 @@ const NewSale = () => {
       const res = await api.get(`/Stock/${id}`);
       if (res.data.status === "Success") {
         return res.data.data.map((s) => ({
-          label: ` ${s.productCode === "0" || !s.productCode
-            ? ""
-            : `Code ${s.productCode}`
-            }  ${s.stock} (${formatDate(s.CreatedDate)})`,
+          label: ` ${
+            s.productCode === "0" || !s.productCode
+              ? ""
+              : `Code ${s.productCode}`
+          }  ${s.stock} (${formatDate(s.CreatedDate)})`,
           value: s._id,
           ...s,
         }));
@@ -775,11 +778,7 @@ const NewSale = () => {
 
       return {
         ...provided,
-        color: isDisabled
-          ? "#ef4444"
-          : isDark
-            ? "#f9fafb"
-            : "#000",
+        color: isDisabled ? "#ef4444" : isDark ? "#f9fafb" : "#000",
         backgroundColor: isDisabled
           ? isDark
             ? "#7f1d1d"
@@ -820,7 +819,6 @@ const NewSale = () => {
       color: isDark ? "#9ca3af" : "#6b7280",
     }),
   };
-
 
   const selectSerial = (selectedSerials, idx) => {
     const latest = selectedSerials[selectedSerials.length - 1];
@@ -1114,11 +1112,11 @@ const NewSale = () => {
       Sale: {
         ...(selectedCustomer
           ? {
-            contactID: selectedCustomer.value,
-            ...(invoiceDue > 0 ? { dueAmount: invoiceDue } : {}),
-            PreviousBalance: selectedCustomer.balance || 0,
-            CurrentBalance: -dueAmount,
-          }
+              contactID: selectedCustomer.value,
+              ...(invoiceDue > 0 ? { dueAmount: invoiceDue } : {}),
+              PreviousBalance: selectedCustomer.balance || 0,
+              CurrentBalance: -dueAmount,
+            }
           : { BillTo: "No Customer" }),
 
         paid: !selectedCustomer ? grandTotal : paidAmount,
@@ -1211,18 +1209,23 @@ const NewSale = () => {
 
             {/* Date */}
 
-            {!selectedCustomer && <div>
-              <label className="block text-sm font-medium mt-1 mb-1">
-                {formTrans("Bill To")}
-              </label>
-              <div className="relative w-full">
-                {/* Bill to input field */}
-                <input className="global_input w-full" type="text" value={billTo} onChange={(e) => setBillTo(e.target.value)} placeholder="Bill To" />
-
-
+            {!selectedCustomer && (
+              <div>
+                <label className="block text-sm font-medium mt-1 mb-1">
+                  {formTrans("Bill To")}
+                </label>
+                <div className="relative w-full">
+                  {/* Bill to input field */}
+                  <input
+                    className="global_input w-full"
+                    type="text"
+                    value={billTo}
+                    onChange={(e) => setBillTo(e.target.value)}
+                    placeholder="Bill To"
+                  />
+                </div>
               </div>
-            </div>}
-
+            )}
 
             {/* Date */}
             {can("isAdmin") && (
@@ -1249,9 +1252,6 @@ const NewSale = () => {
                 </div>
               </div>
             )}
-
-
-
           </div>
           {/* ==============================  */}
           <div className="flex items-center gap-2">
@@ -1267,14 +1267,16 @@ const NewSale = () => {
                     onClick={() =>
                       setViewTotalPurchasePrice(!viewTotalPurchasePrice)
                     }
-                    className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors duration-300 ${viewTotalPurchasePrice ? "bg-green-500" : "bg-gray-300"
-                      }`}
+                    className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors duration-300 ${
+                      viewTotalPurchasePrice ? "bg-green-500" : "bg-gray-300"
+                    }`}
                   >
                     <span
-                      className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-300 ${viewTotalPurchasePrice
-                        ? "translate-x-4"
-                        : "translate-x-1"
-                        }`}
+                      className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-300 ${
+                        viewTotalPurchasePrice
+                          ? "translate-x-4"
+                          : "translate-x-1"
+                      }`}
                     />
                   </button>
                 </div>
@@ -1287,18 +1289,19 @@ const NewSale = () => {
                 <button
                   type="button"
                   onClick={() => setSendSMS(!sendSMS)}
-                  className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors duration-300 ${sendSMS ? "bg-green-500" : "bg-gray-300"
-                    }`}
+                  className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors duration-300 ${
+                    sendSMS ? "bg-green-500" : "bg-gray-300"
+                  }`}
                 >
                   <span
-                    className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-300 ${sendSMS ? "translate-x-4" : "translate-x-1"
-                      }`}
+                    className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-300 ${
+                      sendSMS ? "translate-x-4" : "translate-x-1"
+                    }`}
                   />
                 </button>
               </div>
             </div>
-            {can("ProfitOnSale") &&
-
+            {can("ProfitOnSale") && (
               <div className="w-1/2 flex flex-col text-center group">
                 <label className="text-sm font-medium">
                   {formTrans("profit")}
@@ -1318,8 +1321,7 @@ const NewSale = () => {
                   ) - (discount || 0)}
                 </h1>
               </div>
-
-            }
+            )}
           </div>
         </div>
 
@@ -1336,7 +1338,6 @@ const NewSale = () => {
               options={products}
               value={null}
               onChange={handleAddProduct}
-
               placeholder="Select Product"
               classNamePrefix="react-select"
               onInputChange={(val) => setSearchProductKeyword(val)}
@@ -1496,13 +1497,13 @@ const NewSale = () => {
                             ...base,
                             backgroundColor: state.isFocused
                               ? document.documentElement.classList.contains(
-                                "dark",
-                              )
+                                  "dark",
+                                )
                                 ? "#4b5563"
                                 : "#f3f4f6"
                               : document.documentElement.classList.contains(
-                                "dark",
-                              )
+                                    "dark",
+                                  )
                                 ? "#374151"
                                 : "#ffffff",
                             color: document.documentElement.classList.contains(
@@ -1619,13 +1620,13 @@ const NewSale = () => {
                                 ...base,
                                 backgroundColor: state.isFocused
                                   ? document.documentElement.classList.contains(
-                                    "dark",
-                                  )
+                                      "dark",
+                                    )
                                     ? "#4b5563"
                                     : "#f3f4f6"
                                   : document.documentElement.classList.contains(
-                                    "dark",
-                                  )
+                                        "dark",
+                                      )
                                     ? "#374151"
                                     : "#ffffff",
                                 color:
@@ -1747,8 +1748,9 @@ const NewSale = () => {
                             }
                             handleProductChange(idx, "qtySold", val); // শুধুমাত্র সংখ্যা allow
                           }}
-                          className={`global_input w-15 px-1 text-center rounded-none ${p.serials?.length > 0 ? "cursor-not-allowed" : ""
-                            }`}
+                          className={`global_input w-15 px-1 text-center rounded-none ${
+                            p.serials?.length > 0 ? "cursor-not-allowed" : ""
+                          }`}
                         />
                         <button
                           onClick={async () => {
@@ -1776,8 +1778,9 @@ const NewSale = () => {
                             }
                             handleProductChange(idx, "qtySold", val); // শুধুমাত্র সংখ্যা allow
                           }}
-                          className={`global_input w-24 text-center ${p.serials?.length > 0 ? "cursor-not-allowed" : ""
-                            }`}
+                          className={`global_input w-24 text-center ${
+                            p.serials?.length > 0 ? "cursor-not-allowed" : ""
+                          }`}
                         />
                       </div>
                     )}
@@ -1805,8 +1808,9 @@ const NewSale = () => {
                             }
                             handleProductChange(idx, "qtySold", val); // শুধুমাত্র সংখ্যা allow
                           }}
-                          className={`global_input w-15 px-1 text-center rounded-none ${p.serials?.length > 0 ? "cursor-not-allowed" : ""
-                            }`}
+                          className={`global_input w-15 px-1 text-center rounded-none ${
+                            p.serials?.length > 0 ? "cursor-not-allowed" : ""
+                          }`}
                         />
                         <button
                           onClick={() => {
@@ -1828,10 +1832,11 @@ const NewSale = () => {
                       onChange={(e) =>
                         handleProductChange(idx, "price", e.target.value)
                       }
-                      className={`global_input w-24 ${p.price < 1
-                        ? "ring-red-500 border-2 border-red-500"
-                        : ""
-                        }`}
+                      className={`global_input w-24 ${
+                        p.price < 1
+                          ? "ring-red-500 border-2 border-red-500"
+                          : ""
+                      }`}
                     />
                   </td>
                   {/* DP*/}
@@ -1910,44 +1915,50 @@ const NewSale = () => {
             </div>
 
             {/* Discount %*/}
-          { can("DiscountOnSale") &&  <div className="flex justify-between">
-              <label>Discount % :</label>
-              <input
-                type="number"
-                value={discountPercent === 0 ? "" : discountPercent}
-                onChange={(e) => {
-                  const percentValue =
-                    e.target.value === "" ? 0 : Number(e.target.value);
-                  const newDiscountAmount = (percentValue / 100) * totalPrice;
-                  setDiscount(newDiscountAmount);
-                  setDiscountPercent(percentValue);
-                }}
-                className="global_input w-40 rounded-sm text-right"
-                min="0"
-                max="100"
-              />
-            </div>}
+            {can("DiscountOnSale") && (
+              <div className="flex justify-between">
+                <label>Discount % :</label>
+                <input
+                  type="number"
+                  value={discountPercent === 0 ? "" : discountPercent}
+                  onChange={(e) => {
+                    const percentValue =
+                      e.target.value === "" ? 0 : Number(e.target.value);
+                    const newDiscountAmount = (percentValue / 100) * totalPrice;
+                    setDiscount(newDiscountAmount);
+                    setDiscountPercent(percentValue);
+                  }}
+                  className="global_input w-40 rounded-sm text-right"
+                  min="0"
+                  max="100"
+                />
+              </div>
+            )}
 
             {/* Discount*/}
-        { can("DiscountOnSale") &&  <div className="flex justify-between">
-              <label>{formTrans("discountAmount")}:</label>
-              <input
-                type="number"
-                value={discount === 0 ? "" : discount}
-                onChange={(e) => {
-                  const discountValue =
-                    e.target.value === "" ? 0 : Number(e.target.value);
-                  const newDiscountPercent =
-                    totalPrice > 0 ? (discountValue / totalPrice) * 100 : 0;
+            {can("DiscountOnSale") && (
+              <div className="flex justify-between">
+                <label>{formTrans("discountAmount")}:</label>
+                <input
+                  type="number"
+                  value={discount === 0 ? "" : discount}
+                  onChange={(e) => {
+                    const discountValue =
+                      e.target.value === "" ? 0 : Number(e.target.value);
+                    const newDiscountPercent =
+                      totalPrice > 0 ? (discountValue / totalPrice) * 100 : 0;
 
-                  setDiscount(discountValue);
-                  setDiscountPercent(parseFloat(newDiscountPercent.toFixed(2)));
-                }}
-                className="global_input w-40 rounded-sm text-right"
-                min="0"
-                max={totalPrice}
-              />
-            </div>}
+                    setDiscount(discountValue);
+                    setDiscountPercent(
+                      parseFloat(newDiscountPercent.toFixed(2)),
+                    );
+                  }}
+                  className="global_input w-40 rounded-sm text-right"
+                  min="0"
+                  max={totalPrice}
+                />
+              </div>
+            )}
 
             {/* Cost*/}
             <div className="flex justify-between">
@@ -1969,10 +1980,11 @@ const NewSale = () => {
                   const value = e.target.value;
                   setCost(value === "" ? "" : parseInt(value, 10));
                 }}
-                className={`global_input w-40 rounded-sm text-right ${otherCostName === ""
-                  ? "bg-gray-200 dark:bg-gray-600 cursor-not-allowed"
-                  : ""
-                  }`}
+                className={`global_input w-40 rounded-sm text-right ${
+                  otherCostName === ""
+                    ? "bg-gray-200 dark:bg-gray-600 cursor-not-allowed"
+                    : ""
+                }`}
               />
             </div>
 
@@ -2005,7 +2017,7 @@ const NewSale = () => {
             {selectedCustomer && selectedCustomer.balance > 0 && (
               <div className="flex justify-between">
                 <label className="text-green-500 font-medium">
-                  {formTrans("advancePaid")}:
+                  Advance Paid:
                 </label>
                 <input
                   type="number"
@@ -2041,10 +2053,11 @@ const NewSale = () => {
                         handleAccountAmountChange(account.value, e.target.value)
                       }
                       placeholder="Recieve Amount"
-                      className={` w-40 rounded-sm outline-0 p-1.5 text-right ${account.amount > 0
-                        ? "border-2 border-green-500"
-                        : " border-red-500 border"
-                        }`}
+                      className={` w-40 rounded-sm outline-0 p-1.5 text-right ${
+                        account.amount > 0
+                          ? "border-2 border-green-500"
+                          : " border-red-500 border"
+                      }`}
                     />
                   </div>
                 );
@@ -2064,7 +2077,7 @@ const NewSale = () => {
                   classNamePrefix="react-select"
                   // onInputChange={(val) => setSearchSupplierKeyword(val)}
                   styles={getReactSelectStyles()}
-                // isClearable
+                  // isClearable
                 />
               </div>
             )}
@@ -2133,7 +2146,7 @@ const NewSale = () => {
             onClick={handleSubmit}
             className="global_button w-full lg:w-fit"
           >
-            { }
+            {}
             {btn("create")}
           </button>
         </div>

@@ -5,6 +5,7 @@ import { printElement } from "../../Helper/Printer";
 import { Link, useNavigate } from "react-router-dom";
 import loadingStore from "../../Zustand/LoadingStore";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { FaRegEdit } from "react-icons/fa";
 import Swal from "sweetalert2";
 import TimeAgo from "../../Helper/UI/TimeAgo";
 import api from "../../Helper/axios_resonse_interceptor";
@@ -33,6 +34,20 @@ const SaleList = () => {
   const [printSize, setPrintSize] = useState(null);
   const toggleRow = (id) => {
     setOpenRows((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const formatSaleDate = (date) =>
+    new Date(date).toLocaleDateString("en-GB").replace(/\//g, "-");
+
+  const getEditDateTooltip = (editDate) => {
+    if (!editDate) return "";
+    const d = new Date(editDate);
+    const time = d.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+    return `Edited: ${formatSaleDate(editDate)} ${time}`;
   };
 
   // language translator
@@ -267,7 +282,7 @@ const SaleList = () => {
                     </th>
                   )}
 
-                  {isAdmin() && <th className="global_th">Edit Sale</th>}
+                  {isAdmin() && <th className="global_th">{btn("edit")}</th>}
 
                   <th className="global_th">{table("action")}</th>
                 </tr>
@@ -300,10 +315,21 @@ const SaleList = () => {
                       {new Date(sale.CreatedDate).toLocaleDateString("en-GB")}
                     </td> */}
                     <td className="global_td">
-                      {new Date(sale.CreatedDate)
-                        .toLocaleDateString("en-GB")
-                        .replace(/\//g, "-")}{" "}
-                      <TimeAgo date={sale.CreatedDate} />
+                      <span
+                        className={
+                          sale.EditDate
+                            ? "cursor-help border-b border-dashed border-red-500 dark:border-red-500/70"
+                            : ""
+                        }
+                        title={
+                          sale.EditDate
+                            ? getEditDateTooltip(sale.EditDate)
+                            : undefined
+                        }
+                      >
+                        {formatSaleDate(sale.CreatedDate)}{" "}
+                        <TimeAgo date={sale.CreatedDate} />
+                      </span>
                     </td>
                     {isAdmin() && (
                       <td className="global_td">
@@ -330,8 +356,15 @@ const SaleList = () => {
                       </td>
                     )}
                     {isAdmin() && (
-                      <td className="global_edit">
-                        <Link to={`/EditSale/${sale._id}`}>Edit Sale</Link>
+                      <td className="global_td">
+                        <Link
+                          to={`/EditSale/${sale._id}`}
+                          className="global_edit inline-flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap text-xs px-3 py-1 hover:ring-2 hover:ring-amber-300 dark:hover:ring-amber-500 transition-shadow"
+                          title={btn("edit")}
+                        >
+                          <FaRegEdit className="text-sm shrink-0" />
+                          {btn("edit")}
+                        </Link>
                       </td>
                     )}
                     <td className="global_td">
