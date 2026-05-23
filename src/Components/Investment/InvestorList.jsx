@@ -10,12 +10,15 @@ import { GlobalTableTranslator } from "../../TranslationText/GlobalTableTranslat
 import { HeadingTranslate } from "../../TranslationText/GlobalHeadingTranslator";
 import { GlobalFormTranslator } from "../../TranslationText/GlobalFormTranslator";
 import { GlobalBtnTranslator } from "../../TranslationText/GlobalBtnTranslator";
+import ReceiveInvestmentModal from "../Modals/ReceiveInvestmentModal";
 
 const InvestorList = () => {
   const { setGlobalLoader } = loadingStore();
   const [investors, setInvestors] = useState([]);
   const [search, setSearch] = useState("");
   const [form, setForm] = useState({ name: "", mobile: "" });
+  const [receiveModalOpen, setReceiveModalOpen] = useState(false);
+  const [selectedInvestor, setSelectedInvestor] = useState(null);
 
   const heading = useTextTranslate(HeadingTranslate);
   const table = useTextTranslate(GlobalTableTranslator);
@@ -116,6 +119,16 @@ const InvestorList = () => {
     });
   }, [investors, search]);
 
+  const openReceiveModal = (investor) => {
+    setSelectedInvestor(investor);
+    setReceiveModalOpen(true);
+  };
+
+  const closeReceiveModal = () => {
+    setReceiveModalOpen(false);
+    setSelectedInvestor(null);
+  };
+
   const totalBalance = useMemo(
     () =>
       filteredInvestors.reduce(
@@ -203,6 +216,7 @@ const InvestorList = () => {
                 <th className="global_th">{table("userMobile")}</th>
                 <th className="global_th">{table("balance")}</th>
                 <th className="global_th">{table("date")}</th>
+                <th className="global_th">{table("receiveInvestment")}</th>
               </tr>
             </thead>
             <tbody className="global_tbody">
@@ -227,11 +241,20 @@ const InvestorList = () => {
                     <td className="global_td">
                       {formatDate(investor.CreatedDate)}
                     </td>
+                    <td className="global_td">
+                      <button
+                        type="button"
+                        onClick={() => openReceiveModal(investor)}
+                        className="global_button whitespace-nowrap"
+                      >
+                        {table("receiveInvestment")}
+                      </button>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="global_td text-center py-8">
+                  <td colSpan={7} className="global_td text-center py-8">
                     No investors found
                   </td>
                 </tr>
@@ -254,13 +277,20 @@ const InvestorList = () => {
                   >
                     {formatCurrency(totalBalance)}
                   </td>
-                  <td className="global_td" />
+                  <td className="global_td" colSpan={2} />
                 </tr>
               </tfoot>
             )}
           </table>
         </div>
       </div>
+
+      <ReceiveInvestmentModal
+        open={receiveModalOpen}
+        investor={selectedInvestor}
+        onClose={closeReceiveModal}
+        onSuccess={fetchInvestors}
+      />
     </div>
   );
 };

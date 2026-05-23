@@ -232,6 +232,10 @@ export const GlobalFormTranslator = {
     bn: "খরচের ধরন",
   },
 
+  account: {
+    en: "Account",
+    bn: "একাউন্ট",
+  },
   addPaymentAccount: {
     en: "Add Payment Account",
     bn: "পেমেন্ট অ্যাকাউন্ট যোগ করুন",

@@ -100,6 +100,10 @@ export const HeadingTranslate = {
     en: "Add Investor",
     bn: "বিনিয়োগকারী যোগ করুন",
   },
+  receiveInvestment: {
+    en: "Receive Investment",
+    bn: "বিনিয়োগ গ্রহণ",
+  },
   addExpense: {
     en: "Add Expense",
     bn: "খরচ যোগ করুন",
