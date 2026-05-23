@@ -301,8 +301,8 @@ const Transactions = () => {
                 <th className="global_th">Reference</th>
                 <th className="global_th">Contact</th>
                 <th className="global_th">Created By</th>
-                <th className="global_th text-right">Debit</th>
-                <th className="global_th text-right">Credit</th>
+                <th className="global_th text-right">Payment</th>
+                <th className="global_th text-right">Received</th>
                 <th className="global_th no-print">Action</th>
               </tr>
             </thead>
@@ -439,9 +439,7 @@ const Transactions = () => {
                       maximumFractionDigits: 2,
                     })}
                     <span className="text-sm ml-2 font-normal">
-                      (
-                      {totalCredit - totalDebit >= 0 ? "Receivable" : "Payable"}
-                      )
+                      ({totalCredit - totalDebit >= 0 ? "Received" : "Payment"})
                     </span>
                   </td>
                   <td className="global_td no-print"></td>

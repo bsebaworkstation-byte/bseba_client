@@ -88,9 +88,7 @@ const InvestorList = () => {
         ErrorToast(res.data.message || "Failed to create investor");
       }
     } catch (error) {
-      ErrorToast(
-        error.response?.data?.message || "Failed to create investor",
-      );
+      ErrorToast(error.response?.data?.message || "Failed to create investor");
     } finally {
       setGlobalLoader(false);
     }
@@ -110,11 +108,7 @@ const InvestorList = () => {
     if (!keyword) return investors;
 
     return investors.filter((investor) => {
-      const haystack = [
-        investor.name,
-        investor.mobile,
-        investor.UserMobile,
-      ]
+      const haystack = [investor.name, investor.mobile, investor.UserMobile]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
@@ -164,7 +158,7 @@ const InvestorList = () => {
         >
           <div>
             <label className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-              {formTrans("customerName")}{" "}
+              {formTrans("investorName")}{" "}
               <span className="text-red-500">*</span>
             </label>
             <input
@@ -172,7 +166,7 @@ const InvestorList = () => {
               name="name"
               value={form.name}
               onChange={handleChange}
-              placeholder={formTrans("customerName")}
+              placeholder={formTrans("investorName")}
               className="global_input"
               required
             />
@@ -226,8 +220,7 @@ const InvestorList = () => {
                 <th className="global_th">#</th>
                 <th className="global_th">{table("name")}</th>
                 <th className="global_th">{table("mobile")}</th>
-                <th className="global_th">{table("userMobile")}</th>
-                <th className="global_th">{table("balance")}</th>
+                <th className="global_th">{table("investment")}</th>
                 <th className="global_th">{table("date")}</th>
                 <th className="global_th">{table("action")}</th>
               </tr>
@@ -239,17 +232,17 @@ const InvestorList = () => {
                     <td className="global_td">{index + 1}</td>
                     <td className="global_td font-medium">{investor.name}</td>
                     <td className="global_td">{investor.mobile || "-"}</td>
-                    <td className="global_td">{investor.UserMobile || "-"}</td>
+
                     <td
                       className={`global_td font-medium ${
-                        Number(investor.balance) < 0
+                        Number(investor.balance) > 0
                           ? "text-red-500"
-                          : Number(investor.balance) > 0
+                          : Number(investor.balance) < 0
                             ? "text-green-500"
                             : ""
                       }`}
                     >
-                      {formatCurrency(Number(investor.balance || 0))}
+                      {formatCurrency(Math.abs(Number(investor.balance || 0)))}
                     </td>
                     <td className="global_td">
                       {formatDate(investor.CreatedDate)}
@@ -259,14 +252,15 @@ const InvestorList = () => {
                         <button
                           type="button"
                           onClick={() => openReceiveModal(investor)}
-                          className="global_button whitespace-nowrap text-xs px-2 py-1"
+                          className="global_button cursor-pointer whitespace-nowrap text-xs px-2 py-1"
                         >
                           {table("receiveInvestment")}
                         </button>
                         <button
                           type="button"
                           onClick={() => openReturnModal(investor)}
-                          className="global_edit whitespace-nowrap text-xs px-2 py-1"
+                          disabled={Number(investor.balance || 0) === 0}
+                          className="global_edit cursor-pointer whitespace-nowrap text-xs px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {table("return")}
                         </button>
@@ -276,7 +270,7 @@ const InvestorList = () => {
                             investorName: investor.name,
                             investorMobile: investor.mobile,
                           }}
-                          className="global_edit whitespace-nowrap text-xs px-2 py-1"
+                          className="global_edit cursor-pointer whitespace-nowrap text-xs px-2 py-1"
                         >
                           {btn("Report")}
                         </Link>
@@ -307,7 +301,7 @@ const InvestorList = () => {
                           : ""
                     }`}
                   >
-                    {formatCurrency(totalBalance)}
+                    {formatCurrency(Math.abs(totalBalance))}
                   </td>
                   <td className="global_td" colSpan={2} />
                 </tr>
