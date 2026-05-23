@@ -2,19 +2,25 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
 import api from "../../Helper/axios_resonse_interceptor";
 import loadingStore from "../../Zustand/LoadingStore";
-import { ErrorToast } from "../../Helper/FormHelper";
+import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
 import { formatCurrency } from "../../Helper/formatCurrency";
+import GlobalPhoneInput from "../../Helper/GlobalPhoneInput";
 import { useTextTranslate } from "../../TranslationText/useTextTranslate";
 import { GlobalTableTranslator } from "../../TranslationText/GlobalTableTranslator";
 import { HeadingTranslate } from "../../TranslationText/GlobalHeadingTranslator";
+import { GlobalFormTranslator } from "../../TranslationText/GlobalFormTranslator";
+import { GlobalBtnTranslator } from "../../TranslationText/GlobalBtnTranslator";
 
 const InvestorList = () => {
   const { setGlobalLoader } = loadingStore();
   const [investors, setInvestors] = useState([]);
   const [search, setSearch] = useState("");
+  const [form, setForm] = useState({ name: "", mobile: "" });
 
   const heading = useTextTranslate(HeadingTranslate);
   const table = useTextTranslate(GlobalTableTranslator);
+  const formTrans = useTextTranslate(GlobalFormTranslator);
+  const btn = useTextTranslate(GlobalBtnTranslator);
 
   const fetchInvestors = useCallback(async () => {
     setGlobalLoader(true);
@@ -39,6 +45,50 @@ const InvestorList = () => {
   useEffect(() => {
     fetchInvestors();
   }, [fetchInvestors]);
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const resetForm = () => {
+    setForm({ name: "", mobile: "" });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!form.name?.trim()) {
+      ErrorToast("Investor name is required");
+      return;
+    }
+
+    if (!form.mobile?.trim()) {
+      ErrorToast("Mobile number is required");
+      return;
+    }
+
+    setGlobalLoader(true);
+    try {
+      const res = await api.post("/AddInvestor", {
+        name: form.name.trim(),
+        mobile: form.mobile.trim(),
+      });
+
+      if (res.data.status === "success") {
+        SuccessToast("Investor created successfully");
+        resetForm();
+        fetchInvestors();
+      } else {
+        ErrorToast(res.data.message || "Failed to create investor");
+      }
+    } catch (error) {
+      ErrorToast(
+        error.response?.data?.message || "Failed to create investor",
+      );
+    } finally {
+      setGlobalLoader(false);
+    }
+  };
 
   const formatDate = (date) => {
     if (!date) return "-";
@@ -77,6 +127,54 @@ const InvestorList = () => {
 
   return (
     <div className="global_container">
+      <div className="global_sub_container mb-6">
+        <h1 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+          {heading("addInvestor")}
+        </h1>
+
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 items-end"
+        >
+          <div>
+            <label className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+              {formTrans("customerName")}{" "}
+              <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              placeholder={formTrans("customerName")}
+              className="global_input"
+              required
+            />
+          </div>
+
+          <GlobalPhoneInput
+            label={formTrans("mobile")}
+            required
+            name="mobile"
+            value={form.mobile}
+            onChange={handleChange}
+          />
+
+          <div className="flex gap-3">
+            <button type="submit" className="global_button w-full">
+              {btn("create")}
+            </button>
+            <button
+              type="button"
+              onClick={resetForm}
+              className="global_edit w-full"
+            >
+              {btn("cancel")}
+            </button>
+          </div>
+        </form>
+      </div>
+
       <div className="global_sub_container">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
           <div>
