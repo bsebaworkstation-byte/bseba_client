@@ -94,8 +94,36 @@ export const GlobalTableTranslator = {
     bn: "ইউজার মোবাইল",
   },
   receiveInvestment: {
-    en: "Receive Investment",
-    bn: "বিনিয়োগ গ্রহণ",
+    en: "Receive",
+    bn: "গ্রহণ",
+  },
+  return: {
+    en: "Return",
+    bn: "ফেরত",
+  },
+  receive: {
+    en: "Receive",
+    bn: "গ্রহণ",
+  },
+  type: {
+    en: "Type",
+    bn: "ধরন",
+  },
+  account: {
+    en: "Account",
+    bn: "একাউন্ট",
+  },
+  totalReceive: {
+    en: "Total Receive",
+    bn: "মোট গ্রহণ",
+  },
+  totalReturn: {
+    en: "Total Return",
+    bn: "মোট ফেরত",
+  },
+  netBalance: {
+    en: "Net Balance",
+    bn: "নিট ব্যালেন্স",
   },
   page: {
     en: "Page",

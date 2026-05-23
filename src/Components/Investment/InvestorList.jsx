@@ -10,7 +10,9 @@ import { GlobalTableTranslator } from "../../TranslationText/GlobalTableTranslat
 import { HeadingTranslate } from "../../TranslationText/GlobalHeadingTranslator";
 import { GlobalFormTranslator } from "../../TranslationText/GlobalFormTranslator";
 import { GlobalBtnTranslator } from "../../TranslationText/GlobalBtnTranslator";
+import { Link } from "react-router-dom";
 import ReceiveInvestmentModal from "../Modals/ReceiveInvestmentModal";
+import ReturnInvestmentModal from "../Modals/ReturnInvestmentModal";
 
 const InvestorList = () => {
   const { setGlobalLoader } = loadingStore();
@@ -18,6 +20,7 @@ const InvestorList = () => {
   const [search, setSearch] = useState("");
   const [form, setForm] = useState({ name: "", mobile: "" });
   const [receiveModalOpen, setReceiveModalOpen] = useState(false);
+  const [returnModalOpen, setReturnModalOpen] = useState(false);
   const [selectedInvestor, setSelectedInvestor] = useState(null);
 
   const heading = useTextTranslate(HeadingTranslate);
@@ -126,7 +129,17 @@ const InvestorList = () => {
 
   const closeReceiveModal = () => {
     setReceiveModalOpen(false);
-    setSelectedInvestor(null);
+    if (!returnModalOpen) setSelectedInvestor(null);
+  };
+
+  const openReturnModal = (investor) => {
+    setSelectedInvestor(investor);
+    setReturnModalOpen(true);
+  };
+
+  const closeReturnModal = () => {
+    setReturnModalOpen(false);
+    if (!receiveModalOpen) setSelectedInvestor(null);
   };
 
   const totalBalance = useMemo(
@@ -216,7 +229,7 @@ const InvestorList = () => {
                 <th className="global_th">{table("userMobile")}</th>
                 <th className="global_th">{table("balance")}</th>
                 <th className="global_th">{table("date")}</th>
-                <th className="global_th">{table("receiveInvestment")}</th>
+                <th className="global_th">{table("action")}</th>
               </tr>
             </thead>
             <tbody className="global_tbody">
@@ -242,13 +255,32 @@ const InvestorList = () => {
                       {formatDate(investor.CreatedDate)}
                     </td>
                     <td className="global_td">
-                      <button
-                        type="button"
-                        onClick={() => openReceiveModal(investor)}
-                        className="global_button whitespace-nowrap"
-                      >
-                        {table("receiveInvestment")}
-                      </button>
+                      <div className="flex flex-wrap items-center justify-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => openReceiveModal(investor)}
+                          className="global_button whitespace-nowrap text-xs px-2 py-1"
+                        >
+                          {table("receiveInvestment")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => openReturnModal(investor)}
+                          className="global_edit whitespace-nowrap text-xs px-2 py-1"
+                        >
+                          {table("return")}
+                        </button>
+                        <Link
+                          to={`/InvestmentReport/${investor._id}`}
+                          state={{
+                            investorName: investor.name,
+                            investorMobile: investor.mobile,
+                          }}
+                          className="global_edit whitespace-nowrap text-xs px-2 py-1"
+                        >
+                          {btn("Report")}
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -289,6 +321,12 @@ const InvestorList = () => {
         open={receiveModalOpen}
         investor={selectedInvestor}
         onClose={closeReceiveModal}
+        onSuccess={fetchInvestors}
+      />
+      <ReturnInvestmentModal
+        open={returnModalOpen}
+        investor={selectedInvestor}
+        onClose={closeReturnModal}
         onSuccess={fetchInvestors}
       />
     </div>
