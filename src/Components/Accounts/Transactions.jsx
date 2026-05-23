@@ -17,7 +17,6 @@ import {
 import useLanguageStore from "../../Zustand/languageStore";
 
 const Transactions = () => {
-
   const [reportData, setReportData] = useState([]);
   const { setGlobalLoader } = loadingStore();
   const { lang } = useLanguageStore();
@@ -31,7 +30,6 @@ const Transactions = () => {
   const [filterByCreate, setFilterByCreate] = useState("");
 
   const toISO = (date, end = false) => {
-
     const d = new Date(date);
 
     const year = d.getFullYear();
@@ -45,11 +43,9 @@ const Transactions = () => {
     return `${year}-${month.toString().padStart(2, "0")}-${day
       .toString()
       .padStart(2, "0")}T${hours}:${minutes}:${seconds}.000Z`;
-
   };
 
   const fetchData = async () => {
-
     if (!startDate || !endDate) return;
 
     const start = toISO(startDate);
@@ -58,48 +54,36 @@ const Transactions = () => {
     setGlobalLoader(true);
 
     try {
-
       const res = await api.get(`/AccountPaymentReport/${start}/${end}`);
 
       if (res.data.status === "Success") {
         setReportData(res.data.data || []);
       }
-
     } catch (err) {
-
       console.error("Failed to load account report", err);
       setReportData([]);
-
     } finally {
-
       setGlobalLoader(false);
-
     }
-
   };
 
   useEffect(() => {
-
     const { start, end } = getDateRange("Today");
 
     setStartDate(new Date(start));
     setEndDate(new Date(end));
     setInitialized(true);
-
   }, []);
 
   useEffect(() => {
-
     if (initialized) {
       fetchData();
     }
-
   }, [startDate, endDate]);
 
   // Filter by Type
 
   const filterByType = reportData.filter((item) => {
-
     if (filterType === "All") return true;
 
     if (filterType === "Sale") return !!item.saleID;
@@ -110,25 +94,22 @@ const Transactions = () => {
     if (filterType === "Staff") return !!item.staffID;
 
     return true;
-
   });
 
   const filteredData = useMemo(() => {
-
     if (!filterByCreate) return filterByType;
 
     return filterByType.filter((item) => item.CreatedBy === filterByCreate);
-
   }, [filterByType, filterByCreate]);
 
   const totalDebit = filteredData.reduce(
     (acc, item) => acc + (item.Debit || 0),
-    0
+    0,
   );
 
   const totalCredit = filteredData.reduce(
     (acc, item) => acc + (item.Credit || 0),
-    0
+    0,
   );
 
   const handlePrint = () => {
@@ -136,20 +117,17 @@ const Transactions = () => {
   };
 
   const uniqueData = useMemo(() => {
-
     return Array.from(
       new Map(
         filterByType
           .filter((item) => item.CreatedBy)
-          .map((item) => [item.CreatedBy, item])
-      ).values()
+          .map((item) => [item.CreatedBy, item]),
+      ).values(),
     );
-
   }, [filterByType]);
 
   // Report Link
   const getReportLink = (item) => {
-
     if (item.saleID) return `/Invoice/1/${item.saleID}`;
 
     if (item.purchaseID) return `/PurchaseDetails/${item.purchaseID}`;
@@ -157,13 +135,13 @@ const Transactions = () => {
     if (item.expensesID) return `/ExpenseDetails/${item.expensesID}`;
 
     if (item.transactionID) return `/TransactionDetails/${item.transactionID}`;
+    //  investorID add
+    if (item.investorID) return `/InvestmentReport/${item.investorID}`;
 
     return "#";
-
   };
 
   const getReportLabel = (item) => {
-
     if (item.saleID) return "View Sale";
 
     if (item.purchaseID) return "View Purchase";
@@ -172,58 +150,47 @@ const Transactions = () => {
 
     if (item.transactionID) return "View Details";
 
+    if (item.investorID) return "View Investment";
+
     return "View";
   };
 
   return (
-
     <section className="container global_container mx-auto">
-
       <div className="global_sub_container">
-
         {/* Date Filter */}
 
         <div className="flex flex-col md:flex-row md:justify-between md:items-center">
-
           <select
             value={selectedRange}
             onChange={(e) => {
-
               const value = e.target.value;
 
               setSelectedRange(value);
 
               if (value !== "Custom") {
-
                 const { start, end } = getDateRange(value);
 
                 setStartDate(new Date(start));
                 setEndDate(new Date(end));
-
               }
-
             }}
             className="global_dropdown max-w-40"
           >
-
             {Object.values(dateRangeOptions).map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label[lang]}
               </option>
             ))}
-
           </select>
 
           <div className="flex gap-4 pb-4">
-
             <div>
-
               <label className="block text-sm">
                 {translateDatePickerText.start_date[lang]}
               </label>
 
               <div className="relative">
-
                 <FaCalendarAlt className="absolute left-3 top-3" />
 
                 <DatePicker
@@ -232,19 +199,15 @@ const Transactions = () => {
                   dateFormat="dd-MM-yyyy"
                   className="global_input pl-10"
                 />
-
               </div>
-
             </div>
 
             <div>
-
               <label className="block text-sm">
                 {translateDatePickerText.end_date[lang]}
               </label>
 
               <div className="relative">
-
                 <FaCalendarAlt className="absolute left-3 top-3" />
 
                 <DatePicker
@@ -253,19 +216,14 @@ const Transactions = () => {
                   dateFormat="dd-MM-yyyy"
                   className="global_input pl-10"
                 />
-
               </div>
-
             </div>
-
           </div>
-
         </div>
 
         {/* Filters */}
 
         <div className="flex mt-3 flex-wrap justify-end items-end gap-3">
-
           <button
             onClick={handlePrint}
             className="global_button_red flex items-center gap-2"
@@ -278,7 +236,6 @@ const Transactions = () => {
             onChange={(e) => setFilterType(e.target.value)}
             className="max-w-40 border p-1.5 rounded-md"
           >
-
             <option value="All">All</option>
             <option value="Sale">Sale</option>
             <option value="Return">Return</option>
@@ -286,7 +243,6 @@ const Transactions = () => {
             <option value="Expense">Expense</option>
             <option value="Warranty">Warranty</option>
             <option value="Staff">Staff salary</option>
-
           </select>
 
           <select
@@ -294,7 +250,6 @@ const Transactions = () => {
             onChange={(e) => setFilterByCreate(e.target.value)}
             className="max-w-40 border p-1.5 rounded-md"
           >
-
             <option value="">All</option>
 
             {uniqueData.map((item) => (
@@ -302,19 +257,14 @@ const Transactions = () => {
                 {item.CreatedBy}
               </option>
             ))}
-
           </select>
-
         </div>
-
       </div>
 
       {/* Table */}
 
       <div className="global_sub_container">
-
         <div ref={printRef} className="overflow-x-auto">
-
           <style>{`
             @media print {
               .no-print {
@@ -343,11 +293,8 @@ const Transactions = () => {
           `}</style>
 
           <table className="global_table">
-
             <thead className="global_thead">
-
               <tr>
-
                 <th className="global_th">#</th>
                 <th className="global_th">Date</th>
                 <th className="global_th">Account Title</th>
@@ -357,27 +304,19 @@ const Transactions = () => {
                 <th className="global_th text-right">Debit</th>
                 <th className="global_th text-right">Credit</th>
                 <th className="global_th no-print">Action</th>
-
               </tr>
-
             </thead>
 
             <tbody className="global_tbody">
-
               {filteredData.length === 0 ? (
-
                 <tr>
                   <td colSpan="9" className="text-center py-6">
                     No records found
                   </td>
                 </tr>
-
               ) : (
-
                 filteredData.map((item, index) => (
-
                   <tr key={item._id} className="global_tr">
-
                     <td className="global_td">{index + 1}</td>
 
                     <td className="global_td">
@@ -389,9 +328,7 @@ const Transactions = () => {
                     </td>
 
                     <td className="global_td text-left">
-
                       <div className="flex flex-col">
-
                         <span>{item.AccountTitle}</span>
 
                         {item.chequeNo && (
@@ -399,31 +336,25 @@ const Transactions = () => {
                             Cheque No: {item.chequeNo}
                           </span>
                         )}
-
                       </div>
-
                     </td>
 
                     <td className="global_td">
-
                       {item.saleID
                         ? "Sale"
                         : item.purchaseID
-                        ? "Purchase"
-                        : item.expensesID
-                        ? "Expense"
-                        : item.staffID
-                        ? "Staff"
-                        : item.Credit > 0
-                        ? "Received"
-                        : "Payment"}
-
+                          ? "Purchase"
+                          : item.expensesID
+                            ? "Expense"
+                            : item.staffID
+                              ? "Staff"
+                              : item.Credit > 0
+                                ? "Received"
+                                : "Payment"}
                     </td>
 
                     <td className="global_td">
-
                       <div className="flex flex-col">
-
                         <span>
                           {item.ContactName ||
                             item.ContactMobile ||
@@ -435,9 +366,7 @@ const Transactions = () => {
                             {item.ContactMobile}
                           </span>
                         )}
-
                       </div>
-
                     </td>
 
                     <td className="global_td">{item.CreatedBy}</td>
@@ -451,54 +380,68 @@ const Transactions = () => {
                     </td>
 
                     <td className="global_td no-print">
-
-                      <Link
-                        to={getReportLink(item)}
-                        className="global_button"
-                      >
+                      <Link to={getReportLink(item)} className="global_button">
                         {getReportLabel(item)}
                       </Link>
-
                     </td>
                   </tr>
                 ))
-
               )}
-
             </tbody>
 
             {/* Updated Footer with better styling */}
             {filteredData.length > 0 && (
-
               <tfoot className="font-bold">
-
                 {/* Subtotal row */}
                 <tr className="border-t-2 border-gray-400 bg-gray-50">
-                  <td colSpan="6" className="global_td text-right font-bold text-gray-700 uppercase tracking-wider">
+                  <td
+                    colSpan="6"
+                    className="global_td text-right font-bold text-gray-700 uppercase tracking-wider"
+                  >
                     Subtotal
                   </td>
                   <td className="global_td text-right text-red-700 font-bold">
-                    ৳{totalDebit.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                    ৳
+                    {totalDebit.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                   </td>
                   <td className="global_td text-right text-green-700 font-bold">
-                    ৳{totalCredit.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                    ৳
+                    {totalCredit.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                   </td>
                   <td className="global_td no-print"></td>
                 </tr>
 
                 {/* Net Balance row */}
                 <tr className="border-t-2 border-gray-400 bg-gray-100">
-                  <td colSpan="6" className="global_td text-right font-bold text-gray-800 uppercase tracking-wider">
+                  <td
+                    colSpan="6"
+                    className="global_td text-right font-bold text-gray-800 uppercase tracking-wider"
+                  >
                     Net Balance
                   </td>
-                  <td colSpan="2" className={`global_td text-center font-bold text-lg ${
-                    totalCredit - totalDebit >= 0
-                      ? "text-green-600"
-                      : "text-red-600"
-                  }`}>
-                    ৳{(totalCredit - totalDebit).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                  <td
+                    colSpan="2"
+                    className={`global_td text-center font-bold text-lg ${
+                      totalCredit - totalDebit >= 0
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    ৳
+                    {(totalCredit - totalDebit).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                     <span className="text-sm ml-2 font-normal">
-                      ({totalCredit - totalDebit >= 0 ? "Receivable" : "Payable"})
+                      (
+                      {totalCredit - totalDebit >= 0 ? "Receivable" : "Payable"}
+                      )
                     </span>
                   </td>
                   <td className="global_td no-print"></td>
@@ -514,25 +457,20 @@ const Transactions = () => {
                       <span>|</span>
                       <span>Total Credit: ৳{totalCredit.toLocaleString()}</span>
                       <span>|</span>
-                      <span>Period: {formatDateToLocal(startDate)} - {formatDateToLocal(endDate)}</span>
+                      <span>
+                        Period: {formatDateToLocal(startDate)} -{" "}
+                        {formatDateToLocal(endDate)}
+                      </span>
                     </div>
                   </td>
                 </tr>
-
               </tfoot>
-
             )}
-
           </table>
-
         </div>
-
       </div>
-
     </section>
-
   );
-
 };
 
 export default Transactions;
