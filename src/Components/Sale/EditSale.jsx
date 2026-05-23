@@ -250,24 +250,44 @@ const EditSale = () => {
 
   const hasValidSerial = (s) => Boolean(s?.serialNo ?? s?.value ?? s?.label);
 
+  const formatSerialOption = (s, productLineID) => ({
+    ...s,
+    _id: s._id,
+    serialNo: s.serialNo,
+    value: s.serialNo,
+    label: s.serialNo,
+    productLineID: s.productLineID ?? productLineID,
+  });
+
+  const mergeSerialOptions = (serials, serialNos, productLineID) => {
+    const merged = [
+      ...(Array.isArray(serials) ? serials : []),
+      ...(Array.isArray(serialNos) ? serialNos : []),
+    ]
+      .filter(hasValidSerial)
+      .map((s) => formatSerialOption(s, productLineID));
+
+    const seen = new Set();
+    return merged.filter((s) => {
+      const key = s._id || s.serialNo;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  };
+
+  const formatSelectedSerialsFromSaleLine = (serialNos, productLineID) =>
+    (Array.isArray(serialNos) ? serialNos : [])
+      .filter(hasValidSerial)
+      .map((s) => formatSerialOption(s, productLineID));
+
+  const getSerialOptions = (p) => (p.serials ?? []).filter(hasValidSerial);
+
   const productHasSerialUI = (p) =>
-    Array.isArray(p.serials) &&
-    p.serials.length > 0 &&
-    p.serials.some(hasValidSerial);
+    getValidSelectedSerials(p).length > 0 || getSerialOptions(p).length > 0;
 
   const getValidSelectedSerials = (p) =>
     (p.selectedSerials ?? []).filter(hasValidSerial);
-
-  const formatSerialsFromSaleLine = (serialNos, productLineID) =>
-    (Array.isArray(serialNos) ? serialNos : [])
-      .filter(hasValidSerial)
-      .map((s) => ({
-        _id: s._id,
-        serialNo: s.serialNo,
-        value: s.serialNo,
-        label: s.serialNo,
-        productLineID,
-      }));
 
   const needsStockRefresh = (p) =>
     p && !productHasSerialUI(p) && p.manageStock !== 0;
@@ -481,11 +501,17 @@ const EditSale = () => {
       // Products
       if (data.Products?.length > 0) {
         const mapped = data.Products.map((p) => {
-          const formattedSerials = formatSerialsFromSaleLine(
+          const selectedSerials = formatSelectedSerialsFromSaleLine(
             p.serialNos,
             p.productLineID,
           );
-          const hasSerials = formattedSerials.length > 0;
+          const serialOptions = mergeSerialOptions(
+            p.serials,
+            p.serialNos,
+            p.productLineID,
+          );
+          const hasSerials =
+            selectedSerials.length > 0 || serialOptions.length > 0;
           // API Products[].stock → selectedProducts[].stocks (Stocks table column)
           const stocks = formatStockOptions(p.stock);
           const selectedStock =
@@ -515,9 +541,9 @@ const EditSale = () => {
           if (hasSerials) {
             return {
               ...base,
-              serials: formattedSerials,
-              selectedSerials: formattedSerials,
-              qtySold: formattedSerials.length,
+              serials: serialOptions,
+              selectedSerials,
+              qtySold: selectedSerials.length || p.quantity,
             };
           }
 
@@ -1793,7 +1819,7 @@ const EditSale = () => {
                           {productHasSerialUI(p) && (
                             <Select
                               value={getValidSelectedSerials(p)}
-                              options={p.serials.filter(hasValidSerial)}
+                              options={getSerialOptions(p)}
                               onChange={(serial) => selectSerial(serial, idx)}
                               isMulti
                               menuPlacement="auto"
