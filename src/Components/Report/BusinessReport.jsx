@@ -28,6 +28,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { getReactSelectStyles } from "../../Helper/reactSelectStyles";
 import api from "../../Helper/axios_resonse_interceptor";
+import { ErrorToast } from "../../Helper/FormHelper";
 
 const periodOptions = [
   { value: "today", label: "Today" },
@@ -57,6 +58,7 @@ const BusinessReport = () => {
   const [data, setData] = useState({});
   const [businessValueData, setBusinessValueData] = useState(null);
   const [allAccount, setAllAccount] = useState([]);
+  const [investors, setInvestors] = useState([]);
   // Apply selected filter to set start/end dates
   const applyFilter = (selectedFilter) => {
     const now = new Date();
@@ -127,7 +129,7 @@ const BusinessReport = () => {
     try {
       setGlobalLoader(true);
       const res = await api.get(
-        `/BusinessReport/${formatDate(start)}/${formatDate(end)}`
+        `/BusinessReport/${formatDate(start)}/${formatDate(end)}`,
       );
 
       if (res.data.status === "Success") {
@@ -137,6 +139,20 @@ const BusinessReport = () => {
       console.error("Error fetching data", error);
     } finally {
       setGlobalLoader(false);
+    }
+  };
+
+  const fetchInvestorList = async () => {
+    try {
+      const res = await api.get("/InvestorList");
+      if (res.data.status === "success") {
+        setInvestors(res.data.data || []);
+      } else {
+        setInvestors([]);
+      }
+    } catch (error) {
+      console.error("Error fetching investor list", error);
+      setInvestors([]);
     }
   };
 
@@ -168,6 +184,7 @@ const BusinessReport = () => {
   useEffect(() => {
     fetchBusinessValue();
     fetchAllAccounts();
+    fetchInvestorList();
   }, []);
 
   const cards = [
@@ -241,7 +258,6 @@ const BusinessReport = () => {
       icon: <FaWrench />,
       type: "Cost",
     },
-
 
     {
       title: "Total Sale Return",
@@ -319,7 +335,8 @@ const BusinessReport = () => {
         (data?.warrantyCost?.totalWarrantyCredit || 0) -
         ((data?.expenses?.totalExpenses || 0) +
           (data?.purchases?.totalPurchasesCost || 0) +
-          (data?.salary?.totalSalary || 0) + (data?.servicePayment?.ServiceRefund || 0) +
+          (data?.salary?.totalSalary || 0) +
+          (data?.servicePayment?.ServiceRefund || 0) +
           (data?.saleReturns?.totalSaleReturnProfitLoss || 0) +
           (data?.warrantyCost?.totalWarrantyDebit || 0) +
           (data?.discounts?.totalDiscountDebit || 0)),
@@ -330,8 +347,19 @@ const BusinessReport = () => {
 
   const totalBalance = useMemo(
     () => allAccount.reduce((acc, a) => acc + (a?.balance || 0), 0),
-    [allAccount]
+    [allAccount],
   );
+
+  const investorStats = useMemo(() => {
+    const totalInvestmentBalance = investors.reduce(
+      (sum, investor) => sum + Number(investor.balance || 0),
+      0,
+    );
+    return {
+      count: investors.length,
+      totalInvestmentBalance,
+    };
+  }, [investors]);
   // const businessAsset = useMemo(
   //   () =>
   //     -(
@@ -348,7 +376,7 @@ const BusinessReport = () => {
       (businessValueData?.debit?.totalDebitAmount || 0) +
       (-businessValueData?.credit?.totalCreditAmount || 0) +
       (totalBalance || 0),
-    [businessValueData, totalBalance]
+    [businessValueData, totalBalance],
   );
 
   const StatCard = ({ title, value, color = "text-green-700" }) => (
@@ -399,7 +427,7 @@ const BusinessReport = () => {
             <StatCard
               title="Recievable Contact"
               value={businessValueData?.credit?.totalCreditCustomers?.toFixed(
-                2
+                2,
               )}
               color="text-blue-700"
             />
@@ -444,6 +472,31 @@ const BusinessReport = () => {
               title="Business Asset"
               value={businessAsset.toFixed(2)}
               color={businessAsset > 0 ? "text-green-500" : "text-red-700"}
+            />
+          </div>
+        </section>
+
+        {/* Investment */}
+        <section className="border border-gray-300 dark:border-gray-500 rounded-lg p-2 sm:col-span-2">
+          <h2 className="mb-3 text-lg font-semibold text-gray-700 dark:text-gray-200 text-center">
+            Investment
+          </h2>
+          <div className="flex lg:flex-row flex-col lg:justify-center gap-5">
+            <StatCard
+              title="Total Investors"
+              value={investorStats.count}
+              color="text-blue-700"
+            />
+            <StatCard
+              title="Investment Balance"
+              value={Math.abs(investorStats.totalInvestmentBalance).toFixed(2)}
+              color={
+                investorStats.totalInvestmentBalance > 0
+                  ? "text-red-700"
+                  : investorStats.totalInvestmentBalance < 0
+                    ? "text-green-500"
+                    : "text-gray-700"
+              }
             />
           </div>
         </section>
@@ -515,8 +568,9 @@ const BusinessReport = () => {
               className="p-3 rounded-2xl  shadow-md border dark:bg-gray-800 border-gray-200 dark:border-gray-500 text-center bg-white hover:shadow-lg transition-shadow duration-200"
             >
               <div
-                className={`text-3xl text-${item.type === "Cost" ? "yellow" : "green"
-                  }-600 mb-2 flex justify-center`}
+                className={`text-3xl text-${
+                  item.type === "Cost" ? "yellow" : "green"
+                }-600 mb-2 flex justify-center`}
               >
                 {item.icon}
               </div>
@@ -524,12 +578,13 @@ const BusinessReport = () => {
                 {item.title}
               </h6>
               <h3
-                className={`text-2xl  font-bold text-${item.type === "Cost"
+                className={`text-2xl  font-bold text-${
+                  item.type === "Cost"
                     ? "yellow"
                     : item.type === "Dynamic" && item.value < 0
                       ? "red"
                       : "green"
-                  }-500 mt-1`}
+                }-500 mt-1`}
               >
                 {item.value?.toFixed(2) ?? 0}
               </h3>

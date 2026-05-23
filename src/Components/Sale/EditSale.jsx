@@ -1107,43 +1107,47 @@ const EditSale = () => {
   };
 
   const selectSerial = (selectedSerials, idx) => {
-    const latest = selectedSerials[selectedSerials.length - 1];
-    const newLineID = latest.productLineID;
-    const allSameLine = selectedSerials.every(
-      (s) => s.productLineID === selectedSerials[0].productLineID,
-    );
+    const validSerials = (selectedSerials ?? []).filter(hasValidSerial);
 
     setSelectedProducts((prev) => {
+      const oldProduct = { ...prev[idx] };
+      const previousSelected = getValidSelectedSerials(oldProduct);
+
+      if (validSerials.length === 0 && previousSelected.length > 0) {
+        // toast.error("At least one serial must remain selected");
+        return prev;
+      }
+
       const updated = [...prev];
-
-      const oldProduct = { ...updated[idx] };
       const oldLineID = oldProduct.productLineID;
+      const fallbackPrice = Number(oldProduct.price) || 0;
 
-      // CASE 1 — Same productLine + new selection from empty
+      const latest = validSerials[validSerials.length - 1];
+      const unitPrice = resolveSerialUnitPrice(latest, oldProduct);
+      const allSameLine = validSerials.every(
+        (s) => s.productLineID === validSerials[0].productLineID,
+      );
+
+      // CASE 1 — Same productLine
       if (allSameLine) {
         updated[idx] = {
           ...oldProduct,
-          productLineID: latest.productLineID,
-          selectedSerials,
-          qtySold: selectedSerials.length,
-          unitCost: latest.unitCost,
-          price: latest.mrp,
-          dp: latest.dp,
-          total: latest.mrp * selectedSerials.length,
-          warranty: latest.warranty,
+          productLineID: latest.productLineID ?? oldProduct.productLineID,
+          selectedSerials: validSerials,
+          qtySold: validSerials.length,
+          unitCost: latest.unitCost ?? oldProduct.unitCost,
+          price: unitPrice,
+          dp: latest.dp ?? oldProduct.dp,
+          total: unitPrice * validSerials.length,
+          warranty: latest.warranty ?? oldProduct.warranty,
         };
         return updated;
       }
 
-      // ─────────────────────────────
       // CASE 2 — Mixed → SPLIT
-      // ─────────────────────────────
+      const allSerials = [...(oldProduct.serials ?? [])];
+      const alreadySelected = [...(oldProduct.selectedSerials ?? [])];
 
-      // 1️⃣ PREPARE GLOBAL LIST OF ALL AVAILABLE SERIALS (without selected ones)
-      const allSerials = [...oldProduct.serials];
-      const alreadySelected = [...oldProduct.selectedSerials];
-
-      // Keep only previous line in old row
       const oldProductClean = {
         ...oldProduct,
         serials: allSerials.filter((s) => s.productLineID === oldLineID),
@@ -1152,28 +1156,34 @@ const EditSale = () => {
         ),
       };
 
+      const oldRowPrice =
+        resolveSerialUnitPrice(
+          oldProductClean.selectedSerials[0],
+          oldProduct,
+        ) || fallbackPrice;
+
       oldProductClean.qtySold = oldProductClean.selectedSerials.length;
-      oldProductClean.total = oldProductClean.qtySold * oldProduct.price;
+      oldProductClean.price = oldRowPrice;
+      oldProductClean.total = oldProductClean.qtySold * oldRowPrice;
 
       updated[idx] = oldProductClean;
 
-      // 2️⃣ NEW ROW SHOULD GET:
-      // ALL SERIALS — oldProductClean.selectedSerials
       const remainingSerials = allSerials.filter(
         (s) => s.productLineID !== oldProductClean.productLineID,
       );
+      const newLinePrice = resolveSerialUnitPrice(latest, oldProduct);
 
       const newProduct = {
         ...oldProduct,
-        productLineID: newLineID,
+        productLineID: latest.productLineID,
         serials: remainingSerials,
         selectedSerials: [latest],
         qtySold: 1,
-        unitCost: latest.unitCost,
-        price: latest.mrp,
-        dp: latest.dp,
-        total: latest.mrp,
-        warranty: latest.warranty,
+        unitCost: latest.unitCost ?? oldProduct.unitCost,
+        price: newLinePrice,
+        dp: latest.dp ?? oldProduct.dp,
+        total: newLinePrice,
+        warranty: latest.warranty ?? oldProduct.warranty,
       };
 
       return [...updated, newProduct];
@@ -1806,7 +1816,9 @@ const EditSale = () => {
                               menuPosition="absolute"
                               placeholder="Select Serial"
                               menuPortalTarget={document.body}
-                              isClearable
+                              isClearable={
+                                getValidSelectedSerials(p).length > 1
+                              }
                               styles={{
                                 control: (base) => ({
                                   ...base,
@@ -1991,26 +2003,21 @@ const EditSale = () => {
                           >
                             -
                           </button>
-                          {p.stocks.length > 1 ? (
-                            <span className="global_input w-15 px-1 text-center rounded-none inline-block min-w-12">
-                              {p.qtySold === 0 ? "" : p.qtySold}
-                            </span>
-                          ) : (
-                            <input
-                              type="number"
-                              value={p.qtySold === 0 ? "" : p.qtySold}
-                              onChange={(e) => {
-                                let val = 0;
-                                if (p.decimal === 0) {
-                                  val = Math.floor(Number(e.target.value || 0));
-                                } else {
-                                  val = e.target.value;
-                                }
-                                handleProductChange(idx, "qtySold", val);
-                              }}
-                              className="global_input w-15 px-1 text-center rounded-none"
-                            />
-                          )}
+                          <input
+                            type="number"
+                            min={1}
+                            value={p.qtySold === 0 ? "" : p.qtySold}
+                            onChange={(e) => {
+                              let val = 0;
+                              if (p.decimal === 0) {
+                                val = Math.floor(Number(e.target.value || 0));
+                              } else {
+                                val = e.target.value;
+                              }
+                              handleProductChange(idx, "qtySold", val);
+                            }}
+                            className="global_input w-15 px-1 text-center rounded-none"
+                          />
                           <button
                             onClick={() => handleProductQtyIncrease(idx)}
                             className="border border-gray-300 dark:border-gray-600 rounded-none px-3 py-1 outline-none"
