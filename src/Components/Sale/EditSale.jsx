@@ -560,6 +560,8 @@ const EditSale = () => {
     }
   };
 
+  console.log("bill to", billTo);
+
   useEffect(() => {
     setOpenSidePanel(false);
     const businessDetails = getBusinessDetails();

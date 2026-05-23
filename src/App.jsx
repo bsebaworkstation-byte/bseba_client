@@ -113,6 +113,7 @@ import SaleWithVatPage from "./Pages/Sale/SaleWithVatPage";
 import InvocieWithVatPage from "./Pages/Sale/InvocieWithVatPage";
 import SalesReturnDetailsPageV2 from "./Pages/Sale/SalesReturnDetailsPageV2";
 import EditSalePage from "./Pages/Sale/EditSalePage";
+import InvestorListPage from "./Pages/Investment/InvestorListPage";
 
 function App() {
   const isLoggedIn = getToken();
@@ -298,6 +299,7 @@ function App() {
             {/* banck and account */}
             <Route path="/BankAccount" element={<AccountPage />} />
             <Route path="/Transactions" element={<TransactionsPage />} />
+            <Route path="/InvestorList" element={<InvestorListPage />} />
 
             <Route path="/BalanceTransfer" element={<BalanceTransferPage />} />
             <Route

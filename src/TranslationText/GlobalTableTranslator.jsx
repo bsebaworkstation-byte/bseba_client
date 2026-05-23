@@ -89,6 +89,10 @@ export const GlobalTableTranslator = {
     en: "Mobile",
     bn: "মোবাইল",
   },
+  userMobile: {
+    en: "User Mobile",
+    bn: "ইউজার মোবাইল",
+  },
   page: {
     en: "Page",
     bn: "পৃষ্ঠা",

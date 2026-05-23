@@ -55,6 +55,8 @@ export const menuText = {
   // bank
   bankAccounts: { en: "Bank Accounts", bn: "ব্যাংক একাউন্ট" },
   balanceTransfer: { en: "Balance Transfer", bn: "ব্যালেন্স ট্রান্সফার" },
+  investment: { en: "Investment", bn: "বিনিয়োগ" },
+  investorList: { en: "Investor List", bn: "বিনিয়োগকারীর তালিকা" },
 
   // HR
   hr: { en: "HR", bn: "এইচআর" },

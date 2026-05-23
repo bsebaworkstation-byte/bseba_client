@@ -92,6 +92,10 @@ export const HeadingTranslate = {
     en: "Customer List",
     bn: "গ্রাহকের তালিকা",
   },
+  investorList: {
+    en: "Investor List",
+    bn: "বিনিয়োগকারীর তালিকা",
+  },
   addExpense: {
     en: "Add Expense",
     bn: "খরচ যোগ করুন",

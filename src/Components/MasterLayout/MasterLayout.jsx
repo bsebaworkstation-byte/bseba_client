@@ -584,6 +584,19 @@ const MasterLayout = ({ children }) => {
               },
             ],
           },
+          {
+            id: "investment",
+            title: t("investment"),
+            icon: <FaMoneyBillTrendUp />,
+            children: [
+              {
+                id: "investorList",
+                title: t("investorList"),
+                icon: <GiTakeMyMoney />,
+                path: "/InvestorList",
+              },
+            ],
+          },
 
 
           // Team
