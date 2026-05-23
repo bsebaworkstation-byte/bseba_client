@@ -22,7 +22,12 @@ import "react-datepicker/dist/react-datepicker.css";
 import loadingStore from "../../Zustand/LoadingStore";
 import api from "../../Helper/axios_resonse_interceptor";
 import Select from "react-select";
-import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
+import {
+  ConfirmToast,
+  ErrorToast,
+  SuccessToast,
+} from "../../Helper/FormHelper";
+import { formatCurrency } from "../../Helper/formatCurrency";
 
 const MemberReport = () => {
   const { id } = useParams();
@@ -37,7 +42,9 @@ const MemberReport = () => {
     { value: "lastYear", label: "Last Year" },
   ];
   const [stuff, setStuff] = useState(null);
-  const [report, setReport] = useState([]);
+  const [salaryPayments, setSalaryPayments] = useState([]);
+  const [salaryHistory, setSalaryHistory] = useState([]);
+  const [reportSummary, setReportSummary] = useState(null);
   const [Filter, setFilter] = useState("thisMonth");
   const [giveSalaryDate, setGiveSalaryDate] = useState(new Date());
   const [startDate, setStartDate] = useState(subDays(new Date(), 30));
@@ -50,19 +57,23 @@ const MemberReport = () => {
     setGlobalLoader(true);
     try {
       const res = await api.get(
-        `/SalaryReport/${formatISO(startDate)}/${formatISO(endDate)}/${id}`
+        `/SalaryReport/${formatISO(startDate)}/${formatISO(endDate)}/${id}`,
       );
       if (res.data.status === "Success") {
-        const stuff = {
+        setStuff({
           name: res.data.staffName,
           mobile: res.data.staffMobile,
-          ...(res.data.staffBalance ? { balance: res.data.staffBalance } : {}),
+          balance: res.data.staffBalance,
           salary: res.data.staffSalary,
-        };
-        let data = res.data.data;
-
-        setReport(data);
-        setStuff(stuff);
+        });
+        setReportSummary({
+          totalPayments: res.data.totalPayments ?? 0,
+          totalSalaryRecords: res.data.totalSalaryRecords ?? 0,
+          totalPaid: res.data.totalPaid ?? 0,
+          totalSalaryAssigned: res.data.totalSalaryAssigned ?? 0,
+        });
+        setSalaryPayments(res.data.data?.salaryPayments || []);
+        setSalaryHistory(res.data.data?.salaryHistory || []);
       } else {
         ErrorToast("Failed to fetch Members");
       }
@@ -93,7 +104,7 @@ const MemberReport = () => {
 
           // accounts থেকে default বাদ দেওয়া
           const filtered = formatted.filter(
-            (a) => a.value !== defaultAccount.value
+            (a) => a.value !== defaultAccount.value,
           );
           setAccounts(filtered);
         } else {
@@ -162,7 +173,7 @@ const MemberReport = () => {
 
   const totalAmount = useMemo(
     () => selectedAccounts.reduce((acc, a) => acc + (a.amount || 0), 0),
-    [selectedAccounts]
+    [selectedAccounts],
   );
 
   const selectAccounts = (account) => {
@@ -185,8 +196,8 @@ const MemberReport = () => {
 
     setSelectedAccounts((prev) =>
       prev.map((acc) =>
-        acc.value === accountId ? { ...acc, amount: newVal } : acc
-      )
+        acc.value === accountId ? { ...acc, amount: newVal } : acc,
+      ),
     );
   };
 
@@ -213,9 +224,10 @@ const MemberReport = () => {
 
       if (res.data.status === "Success") {
         SuccessToast("Salary Has Given Successfully");
-        setFilter("thisMonth");
-        setStartDate(subDays(new Date(), 30));
-        setEndDate(new Date());
+        setNote("");
+        setSelectedAccounts([]);
+        fetchAllAccounts();
+        fetchSalaryReport();
       } else {
         ErrorToast(res.data.message || "Failed to create purchase");
       }
@@ -226,6 +238,32 @@ const MemberReport = () => {
       setGlobalLoader(false);
     }
   };
+
+  const handleDeleteSalaryPayment = async (paymentId) => {
+    const confirmed = await ConfirmToast(
+      "Are you sure you want to delete this salary payment?",
+      "Delete Salary Payment",
+    );
+    if (!confirmed) return;
+
+    setGlobalLoader(true);
+    try {
+      const res = await api.get(`/DeleteSalary/${paymentId}`);
+      if (res.data.status === "Success") {
+        SuccessToast(res.data.message || "Salary payment deleted successfully");
+        fetchSalaryReport();
+      } else {
+        ErrorToast(res.data.message || "Failed to delete salary payment");
+      }
+    } catch (error) {
+      ErrorToast(
+        error.response?.data?.message || "Failed to delete salary payment",
+      );
+    } finally {
+      setGlobalLoader(false);
+    }
+  };
+
   return (
     <div>
       {/* Staff Information Card */}
@@ -235,7 +273,7 @@ const MemberReport = () => {
             Staff Information
           </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
             {/* Name */}
             {stuff.name && (
               <div className="flex flex-col">
@@ -261,33 +299,54 @@ const MemberReport = () => {
             )}
 
             {/* Salary */}
-            {stuff.salary && (
+            {stuff.salary != null && (
               <div className="flex flex-col">
                 <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                  Salary
+                  Monthly Salary
                 </span>
                 <span className="font-medium text-gray-900 dark:text-gray-100">
-                  {Number(stuff.salary).toFixed(2)} Tk
+                  {formatCurrency(Number(stuff.salary))}
                 </span>
               </div>
             )}
 
             {/* Balance */}
-            {stuff.balance !== undefined && stuff.balance !== null && (
+            {stuff.balance != null && (
               <div className="flex flex-col">
                 <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">
                   Balance
                 </span>
                 <span
                   className={`font-medium ${
-                    stuff.balance < 0
+                    Number(stuff.balance) < 0
                       ? "text-red-600 dark:text-red-400"
                       : "text-green-600 dark:text-green-400"
                   }`}
                 >
-                  {Number(stuff.balance).toFixed(2)} Tk
+                  {formatCurrency(Math.abs(Number(stuff.balance)))}
                 </span>
               </div>
+            )}
+
+            {reportSummary && (
+              <>
+                <div className="flex flex-col">
+                  <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                    Total Assigned
+                  </span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">
+                    {formatCurrency(Number(reportSummary.totalSalaryAssigned))}
+                  </span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                    Total Paid
+                  </span>
+                  <span className="font-medium text-green-600 dark:text-green-400">
+                    {formatCurrency(Number(reportSummary.totalPaid))}
+                  </span>
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -421,41 +480,114 @@ const MemberReport = () => {
             />
           </div>
         </div>{" "}
-        {/* Table */}
-        {report.length === 0 ? (
-          <div className="text-center">No Member found</div>
+        {/* Salary assignment history */}
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3">
+          Salary Assignment ({reportSummary?.totalSalaryRecords ?? 0})
+        </h3>
+        {salaryHistory.length === 0 ? (
+          <p className="text-center text-gray-500 dark:text-gray-400 mb-6">
+            No salary assignment found
+          </p>
+        ) : (
+          <div className="overflow-auto mb-8">
+            <table className="global_table w-full">
+              <thead className="global_thead">
+                <tr>
+                  <th className="global_th">#</th>
+                  <th className="global_th">Date</th>
+                  <th className="global_th">Assigned Salary</th>
+                </tr>
+              </thead>
+              <tbody className="global_tbody">
+                {salaryHistory.map((r, i) => (
+                  <tr
+                    key={r._id || i}
+                    className="global_tr bg-gray-100 dark:bg-gray-800"
+                  >
+                    <td className="global_td">{i + 1}</td>
+                    <td className="global_td">
+                      {formatDate(r?.CreatedDate)}{" "}
+                      <TimeAgo date={r?.CreatedDate} />
+                    </td>
+                    <td className="global_td font-medium">
+                      {formatCurrency(Number(r?.salary || 0))}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr className="global_tr font-semibold bg-gray-50 dark:bg-gray-800/50">
+                  <td colSpan={2} className="global_td text-right">
+                    Total Assigned
+                  </td>
+                  <td className="global_td font-medium text-green-600">
+                    {formatCurrency(
+                      Number(reportSummary?.totalSalaryAssigned || 0),
+                    )}
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        )}
+        {/* Salary payments */}
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3">
+          Salary Payments ({reportSummary?.totalPayments ?? 0})
+        </h3>
+        {salaryPayments.length === 0 ? (
+          <p className="text-center text-gray-500 dark:text-gray-400">
+            No salary payment found
+          </p>
         ) : (
           <div className="overflow-auto">
             <table className="global_table w-full">
               <thead className="global_thead">
                 <tr>
                   <th className="global_th">#</th>
-                  <th className="global_th">Salary Date</th>
-                  <th className="global_th">Salary</th>
-
+                  <th className="global_th">Payment Date</th>
+                  <th className="global_th">Paid Amount</th>
                   <th className="global_th">Note</th>
                   <th className="global_th">Action</th>
                 </tr>
               </thead>
               <tbody className="global_tbody">
-                {report.map((r, i) => (
-                  <tr className="font-bold bg-gray-100 dark:bg-gray-800">
+                {salaryPayments.map((r, i) => (
+                  <tr
+                    key={r._id || i}
+                    className="global_tr bg-gray-100 dark:bg-gray-800"
+                  >
                     <td className="global_td">{i + 1}</td>
                     <td className="global_td">
                       {formatDate(r?.CreatedDate)}{" "}
                       <TimeAgo date={r?.CreatedDate} />
                     </td>
-
-                    <td className="global_td">{r?.salary?.toFixed(2)}</td>
-
-                    <td className="global_td">{r?.note}</td>
-
+                    <td className="global_td font-medium">
+                      {formatCurrency(Number(r?.salary || 0))}
+                    </td>
+                    <td className="global_td">{r?.note || "-"}</td>
                     <td className="global_td">
-                      <button className="global_button">View Details</button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteSalaryPayment(r._id)}
+                        className="global_button_red cursor-pointer text-xs px-2 py-1"
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
+              <tfoot>
+                <tr className="global_tr font-semibold bg-gray-50 dark:bg-gray-800/50">
+                  <td colSpan={2} className="global_td text-right">
+                    Total Paid
+                  </td>
+                  <td className="global_td font-medium text-green-600">
+                    {formatCurrency(Number(reportSummary?.totalPaid || 0))}
+                  </td>
+                  <td className="global_td" colSpan={2} />
+                </tr>
+              </tfoot>
             </table>
           </div>
         )}
