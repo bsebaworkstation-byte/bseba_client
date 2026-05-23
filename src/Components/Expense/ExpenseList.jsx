@@ -16,7 +16,7 @@ import useLanguageStore from "../../Zustand/languageStore.js";
 import { Link } from "react-router-dom";
 import { dateRangeOptions } from "../../TranslationText/TranslateTextDateRange";
 import { translateDatePickerText } from "../../TranslationText/TranslateTextDateRange";
-
+import { SuccessToast, ErrorToast } from "../../Helper/FormHelper";
 export default function ExpenseList() {
   const { setGlobalLoader } = loadingStore();
   const { refresh } = expenseStore();
@@ -62,6 +62,7 @@ export default function ExpenseList() {
 
       setExpenseData(data.status === "Success" ? data.data : []);
     } catch (err) {
+      setExpenseData([]);
       console.log(err);
     } finally {
       setGlobalLoader(false);
@@ -93,13 +94,26 @@ export default function ExpenseList() {
   const handlePrint = () => {
     printExpense(printRef, "Expense list");
   };
+  const deleteExpense = async (id) => {
+    try {
+      setGlobalLoader(true);
+      const res = await api.get(`/DeleteExpense/${id}`);
 
+      if (res.data.status === "Success") {
+        SuccessToast("Expense deleted successfully");
+        await fetchExpenseByDate();
+      } else {
+        ErrorToast(res.data.message || "Failed to delete expense");
+      }
+    } catch (error) {
+      ErrorToast(error.response?.data?.message || "Failed to delete expense");
+    } finally {
+      setGlobalLoader(false);
+    }
+  };
   return (
     <div ref={printRef}>
       <h4 className="global_heading">{heading("expenseList")}</h4>
-
-
-
 
       <div className="flex flex-col md:justify-between md:flex-row md:items-center">
         {/* RANGE SELECT */}
@@ -207,16 +221,23 @@ export default function ExpenseList() {
                     .replace(/\//g, "-")}{" "}
                   <TimeAgo date={d.CreatedDate} />
                 </td>
-               <td className="global_td" >
-                 <button>
-                  <Link
-                    to={`/ExpenseDetails/${d._id}`}
-                    className="global_button"
+                <td className="global_td">
+                  <button>
+                    <Link
+                      to={`/ExpenseDetails/${d._id}`}
+                      className="global_button"
+                    >
+                      View
+                    </Link>
+                  </button>
+                  {/* delete button */}
+                  <button
+                    onClick={() => deleteExpense(d._id)}
+                    className="global_button_red ml-4"
                   >
-                    View
-                  </Link>
-                </button>
-               </td>
+                    Delete
+                  </button>
+                </td>
               </tr>
             ))}
             {/* expense */}
@@ -254,7 +275,9 @@ export default function ExpenseList() {
             <tr className="global_tr">
               <th className="global_th">#</th>
               <th className="global_th">{formTrans("category")}</th>
-              <th className="global_th">{table("total")} {table("amount")}</th>
+              <th className="global_th">
+                {table("total")} {table("amount")}
+              </th>
             </tr>
           </thead>
 
