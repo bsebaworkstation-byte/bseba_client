@@ -62,6 +62,7 @@ import DemoDashboardPage from "./Pages/Dashboard/DemoDashboardPage";
 import Invoice2Page from "./Pages/Sale/Invoice2Page";
 import Invoice1Page from "./Pages/Sale/Invoice1Page";
 import Invoice3Page from "./Pages/Sale/Invoice3Page";
+import Invoice12Page from "./Pages/Sale/Invoice12Page";
 import Invoice4Page from "./Pages/Sale/Invoice4Page";
 import Invoice5Page from "./Pages/Sale/Invoice5Page";
 import Profile from "./Components/Profile/Profile";
@@ -277,6 +278,7 @@ function App() {
             <Route path="/Invoice/9/:id" element={<Invoice9Page />} />
             <Route path="/Invoice/10/:id" element={<InvocieWithVatPage />} />
             <Route path="/Invoice/11/:id" element={<Invoice11Page />} />
+            <Route path="/Invoice/12/:id" element={<Invoice12Page />} />
             <Route path="/ChallanBangla/:id" element={<ChallanBanglaPage />} />
             {/* warranty */}
             <Route

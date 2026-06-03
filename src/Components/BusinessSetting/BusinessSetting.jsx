@@ -53,6 +53,8 @@ const BusinessSetting = () => {
     { label: "Bangla Invoice", value: 7 },
     { label: "Invocie With Vat", value: 10 },
     { label: "Invoice 11", value: 11 },
+    { label: "Invoice 12", value: 12 },
+
   ], []);
 
   // Initial load

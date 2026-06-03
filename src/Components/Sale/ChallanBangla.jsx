@@ -98,9 +98,9 @@ const Challan = () => {
               <div className="flex flex-col gap-1">
                 <div className="text-lg lg:text-2xl font-semibold flex flex-col">
                   {businessDetails?.businessName ||
-                  businessDetails?.logo ||
-                  businessDetails?.address ||
-                  businessDetails?.mobile ? (
+                    businessDetails?.logo ||
+                    businessDetails?.address ||
+                    businessDetails?.mobile ? (
                     <div className="flex items-start border p-2 border-gray-300 rounded-lg gap-2">
                       {businessDetails.logo ? (
                         <img
@@ -124,9 +124,9 @@ const Challan = () => {
                     ""
                   )}
 
-                  { details?.SaleSummary?.BillTo || details?.Customer?.name ||
-                  details?.Customer?.mobile ||
-                  details?.Customer?.address ? (
+                  {details?.SaleSummary?.BillTo || details?.Customer?.name ||
+                    details?.Customer?.mobile ||
+                    details?.Customer?.address ? (
                     <div>
                       <h1 className="text-[16px]">{details?.SaleSummary?.BillTo || details?.Customer?.name}</h1>
                       <p className="text-[13px]">{details?.Customer?.mobile}</p>

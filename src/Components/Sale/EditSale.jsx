@@ -48,6 +48,11 @@ const EditSale = () => {
   const { setGlobalLoader } = loadingStore();
   const [note, setNote] = useState("");
   const [purchaseDate, setPurchaseDate] = useState(new Date());
+  const [payments, setPayments] = useState([]);
+  const [currentSelectedAccounts, setCurrentSelectedAccounts] = useState([]);
+
+  // banks
+  const [banks, setBanks] = useState([]);
 
   const [otherCostName, setOtherCostName] = useState("");
   const [cost, setCost] = useState(0);
@@ -425,6 +430,7 @@ const EditSale = () => {
           amount: 0,
           ...b,
         }));
+        setBanks(formatted)
         const defaultAccount = formatted.find((a) => a.default === 1);
         if (defaultAccount) {
           // selectedAccounts এ সেট করা
@@ -484,6 +490,9 @@ const EditSale = () => {
       if (data.discount) {
         setDiscount(data.discount);
         // derive percent if total is available
+      }
+      if (data.Payments) {
+        setPayments(data.Payments);
       }
       if (data.paid) setRecivedAmount(data.paid);
       setOldGrandTotal(data.grandTotal);
@@ -565,9 +574,6 @@ const EditSale = () => {
       setGlobalLoader(false);
     }
   };
-
-  console.log("bill to", billTo);
-  console.log("received amount", recivedAmount);
 
   useEffect(() => {
     setOpenSidePanel(false);
@@ -1013,22 +1019,40 @@ const EditSale = () => {
   );
 
   const paidAmount = useMemo(
-    () => selectedAccounts.reduce((acc, a) => acc + a.amount, 0),
-    [selectedAccounts],
+    () => currentSelectedAccounts.reduce((acc, a) => acc + a.amount, 0),
+    [currentSelectedAccounts, selectedCustomer],
   );
   const grandTotal = useMemo(
     () => totalPrice + (cost || 0) - (discount || 0),
     [cost, discount, totalPrice],
   );
 
+
   const dueAmount = useMemo(
     () =>
       oldGrandTotal +
       (grandTotal - oldGrandTotal) -
-      (paidAmount || 0) -
-      (selectedCustomer?.balance || 0),
-    [grandTotal, paidAmount, selectedCustomer, oldGrandTotal],
+      (paidAmount || 0) - (selectedCustomer?.balance),
+
+    [grandTotal, recivedAmount, paidAmount, selectedCustomer, oldGrandTotal, selectedCustomer?.balance, currentSelectedAccounts],
   );
+
+  //  current due formula: (oldGrandTotal - paidAmount) + customer balance
+  const balance = -selectedCustomer?.balance;
+  console.log("balance", balance)
+  const currentDue = useMemo(
+    () => {
+      const totalPaid = currentSelectedAccounts.reduce((acc, a) => acc + a.amount, 0);
+      return (balance - oldGrandTotal) + grandTotal - totalPaid;
+    },
+    [oldGrandTotal, recivedAmount, selectedCustomer, currentSelectedAccounts],
+  );
+
+  console.log(" ~ file: EditSale.jsx:1040 ~ oldGrandTotal:", oldGrandTotal)
+  console.log(" ~ file: EditSale.jsx:1042 ~ selectedCustomer balance:", -selectedCustomer?.balance)
+  console.log(" ~ file: EditSale.jsx:1045 ~ currentDue:", currentDue);
+  console.log("recivedAmount", recivedAmount)
+  console.log("paidAmount", paidAmount)
 
   const invoiceDue = useMemo(
     () => grandTotal - (paidAmount || 0),
@@ -1053,7 +1077,7 @@ const EditSale = () => {
 
     // if (newVal > grandTotal) newVal = grandTotal; // grandTotal limit ধরে রাখো
 
-    setSelectedAccounts((prev) =>
+    setCurrentSelectedAccounts((prev) =>
       prev.map((acc) =>
         acc.value === accountId ? { ...acc, amount: newVal } : acc,
       ),
@@ -1447,6 +1471,10 @@ const EditSale = () => {
     if (!selectedCustomer && paidAmount < dueAmount) {
       return ErrorToast("Please Pay full amount or select a customer");
     }
+
+    const totalPaid = currentSelectedAccounts.reduce((acc, a) => acc + a.amount, 0);
+
+    console.log("currentDue", currentDue)
     const payload = {
       Sale: {
         ...(selectedCustomer
@@ -1454,11 +1482,11 @@ const EditSale = () => {
             contactID: selectedCustomer.value,
             ...(invoiceDue > 0 ? { dueAmount: invoiceDue } : {}),
             PreviousBalance: selectedCustomer.balance || 0,
-            CurrentBalance: -dueAmount,
+            CurrentBalance: currentDue,
+
           }
           : { BillTo: billTo || "No Customer" }),
-
-        paid: !selectedCustomer ? grandTotal : paidAmount,
+        paid: !selectedCustomer ? grandTotal : totalPaid,
         total: totalPrice,
         discount: discount || 0,
         grandTotal: grandTotal,
@@ -1479,6 +1507,13 @@ const EditSale = () => {
           : {}),
         warranty: p.warranty,
       })),
+      payment: {
+        accounts: currentSelectedAccounts.map((a) => ({
+          accountID: a.value,
+          accountName: a.label,
+          amount: a.amount,
+        })),
+      }
     };
 
     try {
@@ -1501,6 +1536,42 @@ const EditSale = () => {
   useEffect(() => {
     selectedProductsRef.current = selectedProducts;
   }, [selectedProducts]);
+
+
+  const handleAddPaymentAccount = (acc, pay) => {
+    try {
+
+      const selectedAccounts = pay.map((p) => {
+
+        const account = acc.find((a) => a._id === p.accountID);
+
+        const payload = {
+          ...account,
+          value: account._id,
+          label: account.name,
+          amount: p.Credit,
+        };
+
+        return payload;
+
+      });
+
+      return selectedAccounts
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+
+    if (payments.length > 0 && banks.length > 0) {
+      const result = handleAddPaymentAccount(banks, payments);
+      console.log("result", result);
+      setCurrentSelectedAccounts(result);
+    }
+  }, [banks, payments])
+
 
   return (
     <div className="global_container ">
@@ -1617,8 +1688,7 @@ const EditSale = () => {
 
                 <h1
                   className="
-                    opacity-0 
-                    group-hover:opacity-100 
+                    opacity-100
                     transition-opacity 
                     duration-200
                   "
@@ -2232,7 +2302,7 @@ const EditSale = () => {
             {/* Paid Amount With Multiple Bank Account*/}
             <h4>{formTrans("paymentBy")}</h4>
             <div className="flex flex-col gap-2">
-              {selectedAccounts.map((account, index) => {
+              {currentSelectedAccounts?.map((account, index) => {
                 return (
                   <div className="flex justify-between" key={index}>
                     <div className="flex items-center w-full justify-between">
@@ -2249,10 +2319,9 @@ const EditSale = () => {
                     <input
                       type="number"
                       name="amount"
-                      value={recivedAmount}
+                      value={account.amount}
                       onChange={(e) => {
                         handleAccountAmountChange(account.value, e.target.value);
-                        setRecivedAmount(e.target.value);
                       }
                       }
                       placeholder="Recieve Amount"
@@ -2260,6 +2329,7 @@ const EditSale = () => {
                         ? "border-2 border-green-500"
                         : " border-red-500 border"
                         }`}
+
                     />
                   </div>
                 );
@@ -2273,7 +2343,17 @@ const EditSale = () => {
                   options={accounts}
                   value={null}
                   onChange={(account) => {
-                    selectAccounts(account);
+                    setCurrentSelectedAccounts((prev) => {
+                      //  check if account already selected
+                      const existingAccount = prev.find(
+                        (a) => a.value === account.value,
+                      );
+                      if (existingAccount) {
+                        // If account already selected, do not add again
+                        return prev;
+                      }
+                      return [...prev, { ...account, amount: 0 }];
+                    });
                   }}
                   placeholder="Select More Account"
                   classNamePrefix="react-select"
@@ -2298,7 +2378,7 @@ const EditSale = () => {
               </div>
             )}
 
-            {selectedCustomer && dueAmount < 0 && (
+            {/* {selectedCustomer && dueAmount < 0 && (
               <div className="flex justify-between">
                 <label className="text-green-500 font-medium">
                   {formTrans("currentBalance")}:
@@ -2310,17 +2390,17 @@ const EditSale = () => {
                   className="global_input w-40 rounded-sm cursor-not-allowed text-right text-green-500 font-medium"
                 />
               </div>
-            )}
+            )} */}
 
             {/* Current Due Amount*/}
-            {dueAmount > 0 && (
+            {currentDue > 0 && (
               <div className="flex justify-between">
                 <label className="text-red-500">
                   {formTrans("currentDue")}:
                 </label>
                 <input
                   type="number"
-                  value={dueAmount.toFixed(2)}
+                  value={currentDue.toFixed(2)}
                   disabled
                   className="global_input w-40 text-red-500 rounded-sm cursor-not-allowed text-right"
                 />

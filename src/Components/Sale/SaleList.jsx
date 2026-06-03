@@ -191,6 +191,9 @@ const SaleList = () => {
         navigate(`/Invoice/8/${saleId}`);
         break;
 
+      case "Invoice12":
+        navigate(`/Invoice/12/${saleId}`);
+        break;
       case "Invoice9":
         navigate(`/Invoice/9/${saleId}`);
         break;
@@ -292,9 +295,8 @@ const SaleList = () => {
                   <tr key={sale._id} className="global_tr">
                     <td className="global_td">
                       <Link
-                        to={`/Invoice/${getBusinessDetails()?.invoice || 1}/${
-                          sale._id
-                        }`}
+                        to={`/Invoice/${getBusinessDetails()?.invoice || 1}/${sale._id
+                          }`}
                       >
                         {" "}
                         {sale.referenceNo}
@@ -395,11 +397,13 @@ const SaleList = () => {
                         <option value="Invoice3">Invoice 3</option>
                         <option value="Invoice4">Invoice 4</option>
                         <option value="Invoice5">Invoice 5</option>
-                        <option value="banglaInvoice">Invoice6 Bangla</option>
-                        <option value="Invoice7">Invoice 7</option>
+                        <option value="banglaInvoice">Invoice 6</option>
+                        <option value="Invoice7">Invoice7 Bangla</option>
                         <option value="Invoice8">Invoice 8</option>
                         <option value="Invoice9">Invoice 9</option>
                         <option value="Invoice11">Invoice 11</option>
+                        <option value="Invoice12">Invoice 12</option>
+
 
                         <option value="ChallanBangla">Challan Bangla</option>
                       </select>
@@ -415,11 +419,10 @@ const SaleList = () => {
                 <button
                   onClick={() => setPage((p) => Math.max(p - 1, 1))}
                   disabled={page === 1}
-                  className={`px-4 py-2 rounded-r-md rounded-l-full ${
-                    page === 1
-                      ? "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
-                      : "global_button"
-                  }`}
+                  className={`px-4 py-2 rounded-r-md rounded-l-full ${page === 1
+                    ? "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
+                    : "global_button"
+                    }`}
                 >
                   {table("previous")}
                 </button>
@@ -432,11 +435,10 @@ const SaleList = () => {
                 <button
                   onClick={() => setPage((p) => p + 1)}
                   disabled={page >= Math.ceil(total / limit)}
-                  className={`px-4 py-2 rounded-l-md rounded-r-full ${
-                    page >= Math.ceil(total / limit)
-                      ? "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
-                      : "global_button"
-                  }`}
+                  className={`px-4 py-2 rounded-l-md rounded-r-full ${page >= Math.ceil(total / limit)
+                    ? "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
+                    : "global_button"
+                    }`}
                 >
                   {table("next")}
                 </button>
