@@ -68,6 +68,9 @@ const EditSale = () => {
   const table = useTextTranslate(GlobalTableTranslator);
   const formTrans = useTextTranslate(GlobalFormTranslator);
 
+
+  const [recivedAmount, setRecivedAmount] = useState(0);
+
   // const [paidAmount, setPaidAmount] = useState(0);
 
   const fetchProductWithPosMachine = async (code) => {
@@ -153,11 +156,9 @@ const EditSale = () => {
         setProducts(
           raowProducts.map((p) => ({
             value: p._id,
-            label: `${p.name} (${p.Brands.name}) (${
-              p.Categories.name
-            }) (stock - ${p.manageStock === 0 ? "∞" : p.qty})(Barcode ${
-              p.barcode
-            })`,
+            label: `${p.name} (${p.Brands.name}) (${p.Categories.name
+              }) (stock - ${p.manageStock === 0 ? "∞" : p.qty})(Barcode ${p.barcode
+              })`,
             ...p,
             isDisabled: p.manageStock === 1 && p.qty === 0,
           })),
@@ -484,6 +485,7 @@ const EditSale = () => {
         setDiscount(data.discount);
         // derive percent if total is available
       }
+      if (data.paid) setRecivedAmount(data.paid);
       setOldGrandTotal(data.grandTotal);
       if (data.outher) setOtherCostName(data.outher);
       if (data.outherAmount) setCost(data.outherAmount);
@@ -496,9 +498,8 @@ const EditSale = () => {
       if (customerData) {
         setSelectedCustomer({
           value: customerData._id,
-          label: `${customerData.name || ""} (${customerData.address || ""}) (${
-            customerData.mobile || ""
-          }) (${customerData.balance || 0})`,
+          label: `${customerData.name || ""} (${customerData.address || ""}) (${customerData.mobile || ""
+            }) (${customerData.balance || 0})`,
           ...customerData,
         });
       }
@@ -566,6 +567,7 @@ const EditSale = () => {
   };
 
   console.log("bill to", billTo);
+  console.log("received amount", recivedAmount);
 
   useEffect(() => {
     setOpenSidePanel(false);
@@ -1449,11 +1451,11 @@ const EditSale = () => {
       Sale: {
         ...(selectedCustomer
           ? {
-              contactID: selectedCustomer.value,
-              ...(invoiceDue > 0 ? { dueAmount: invoiceDue } : {}),
-              PreviousBalance: selectedCustomer.balance || 0,
-              CurrentBalance: -dueAmount,
-            }
+            contactID: selectedCustomer.value,
+            ...(invoiceDue > 0 ? { dueAmount: invoiceDue } : {}),
+            PreviousBalance: selectedCustomer.balance || 0,
+            CurrentBalance: -dueAmount,
+          }
           : { BillTo: billTo || "No Customer" }),
 
         paid: !selectedCustomer ? grandTotal : paidAmount,
@@ -1562,9 +1564,7 @@ const EditSale = () => {
                   {formTrans("selectDate")}
                 </label>
                 <div className="relative w-full">
-                  {/* <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FaCalendarAlt />
-            </div> */}
+
                   <DatePicker
                     selected={purchaseDate}
                     onChange={(date) => setPurchaseDate(date)}
@@ -1595,16 +1595,14 @@ const EditSale = () => {
                     onClick={() =>
                       setViewTotalPurchasePrice(!viewTotalPurchasePrice)
                     }
-                    className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors duration-300 ${
-                      viewTotalPurchasePrice ? "bg-green-500" : "bg-gray-300"
-                    }`}
+                    className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors duration-300 ${viewTotalPurchasePrice ? "bg-green-500" : "bg-gray-300"
+                      }`}
                   >
                     <span
-                      className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-300 ${
-                        viewTotalPurchasePrice
-                          ? "translate-x-4"
-                          : "translate-x-1"
-                      }`}
+                      className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-300 ${viewTotalPurchasePrice
+                        ? "translate-x-4"
+                        : "translate-x-1"
+                        }`}
                     />
                   </button>
                 </div>
@@ -1777,29 +1775,29 @@ const EditSale = () => {
                       {(p.stocks?.length > 0 ||
                         p.productLineID ||
                         p.manageStock !== 0) && (
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-1">
-                            {p.stocks?.length > 0 ? (
-                              <div className="flex-1 min-w-0">
-                                <Select
-                                  value={p.selectedStock}
-                                  options={p.stocks}
-                                  onChange={(stock) => selectStock(stock, idx)}
-                                  placeholder="Select Stock"
-                                  menuPortalTarget={document.body}
-                                  styles={getReactSelectStyles(isDark)}
-                                />
-                              </div>
-                            ) : (
-                              <span className="flex-1 text-xs text-gray-500">
-                                {refreshingStockIdx === idx
-                                  ? "Loading stock..."
-                                  : "No stock loaded"}
-                              </span>
-                            )}
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-1">
+                              {p.stocks?.length > 0 ? (
+                                <div className="flex-1 min-w-0">
+                                  <Select
+                                    value={p.selectedStock}
+                                    options={p.stocks}
+                                    onChange={(stock) => selectStock(stock, idx)}
+                                    placeholder="Select Stock"
+                                    menuPortalTarget={document.body}
+                                    styles={getReactSelectStyles(isDark)}
+                                  />
+                                </div>
+                              ) : (
+                                <span className="flex-1 text-xs text-gray-500">
+                                  {refreshingStockIdx === idx
+                                    ? "Loading stock..."
+                                    : "No stock loaded"}
+                                </span>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                     </td>
                     {/* Select Serials */}
                     {getBusinessDetails().warranty === "1" && (
@@ -1849,13 +1847,13 @@ const EditSale = () => {
                                   ...base,
                                   backgroundColor: state.isFocused
                                     ? document.documentElement.classList.contains(
-                                        "dark",
-                                      )
+                                      "dark",
+                                    )
                                       ? "#4b5563"
                                       : "#f3f4f6"
                                     : document.documentElement.classList.contains(
-                                          "dark",
-                                        )
+                                      "dark",
+                                    )
                                       ? "#374151"
                                       : "#ffffff",
                                   color:
@@ -2036,11 +2034,10 @@ const EditSale = () => {
                         onChange={(e) =>
                           handleProductChange(idx, "price", e.target.value)
                         }
-                        className={`global_input w-24 ${
-                          p.price < 1
-                            ? "ring-red-500 border-2 border-red-500"
-                            : ""
-                        }`}
+                        className={`global_input w-24 ${p.price < 1
+                          ? "ring-red-500 border-2 border-red-500"
+                          : ""
+                          }`}
                       />
                     </td>
                     {/* DP*/}
@@ -2185,11 +2182,10 @@ const EditSale = () => {
                   const value = e.target.vagrandTotale;
                   setCost(value === "" ? "" : parseInt(value, 10));
                 }}
-                className={`global_input w-40 rounded-sm text-right ${
-                  otherCostName === ""
-                    ? "bg-gray-200 dark:bg-gray-600 cursor-not-allowed"
-                    : ""
-                }`}
+                className={`global_input w-40 rounded-sm text-right ${otherCostName === ""
+                  ? "bg-gray-200 dark:bg-gray-600 cursor-not-allowed"
+                  : ""
+                  }`}
               />
             </div>
 
@@ -2253,16 +2249,17 @@ const EditSale = () => {
                     <input
                       type="number"
                       name="amount"
-                      value={account.amount === 0 ? "" : account.amount}
-                      onChange={(e) =>
-                        handleAccountAmountChange(account.value, e.target.value)
+                      value={recivedAmount}
+                      onChange={(e) => {
+                        handleAccountAmountChange(account.value, e.target.value);
+                        setRecivedAmount(e.target.value);
+                      }
                       }
                       placeholder="Recieve Amount"
-                      className={` w-40 rounded-sm outline-0 p-1.5 text-right ${
-                        account.amount > 0
-                          ? "border-2 border-green-500"
-                          : " border-red-500 border"
-                      }`}
+                      className={` w-40 rounded-sm outline-0 p-1.5 text-right ${account.amount > 0
+                        ? "border-2 border-green-500"
+                        : " border-red-500 border"
+                        }`}
                     />
                   </div>
                 );
@@ -2282,7 +2279,7 @@ const EditSale = () => {
                   classNamePrefix="react-select"
                   // onInputChange={(val) => setSearchSupplierKeyword(val)}
                   styles={getReactSelectStyles()}
-                  // isClearable
+                // isClearable
                 />
               </div>
             )}
