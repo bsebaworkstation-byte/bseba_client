@@ -8,6 +8,7 @@ import { useTextTranslate } from "../../TranslationText/useTextTranslate";
 import { GlobalFormTranslator } from "../../TranslationText/GlobalFormTranslator";
 import { GlobalBtnTranslator } from "../../TranslationText/GlobalBtnTranslator";
 import { HeadingTranslate } from "../../TranslationText/GlobalHeadingTranslator";
+import { formatCurrency } from "../../Helper/formatCurrency";
 
 const ReceiveInvestmentModal = ({ open, onClose, investor, onSuccess }) => {
   const { setGlobalLoader } = loadingStore();
@@ -36,7 +37,7 @@ const ReceiveInvestmentModal = ({ open, onClose, investor, onSuccess }) => {
         if (res.data.status === "Success") {
           const formatted = (res.data.data || []).map((a) => ({
             value: a._id,
-            label: a.name,
+            label: `${a.name} (${a.balance ? formatCurrency(a.balance) : "0"})`,
             ...a,
           }));
           setAccounts(formatted);

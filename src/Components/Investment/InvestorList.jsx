@@ -221,7 +221,7 @@ const InvestorList = () => {
                 <th className="global_th">{table("name")}</th>
                 <th className="global_th">{table("mobile")}</th>
                 <th className="global_th">{table("investment")}</th>
-                <th className="global_th">{table("date")}</th>
+                {/* <th className="global_th">{table("date")}</th> */}
                 <th className="global_th">{table("action")}</th>
               </tr>
             </thead>
@@ -234,19 +234,18 @@ const InvestorList = () => {
                     <td className="global_td">{investor.mobile || "-"}</td>
 
                     <td
-                      className={`global_td font-medium ${
-                        Number(investor.balance) > 0
+                      className={`global_td font-medium ${Number(investor.balance) > 0
+                        ? "text-green-500"
+                        : Number(investor.balance) < 0
                           ? "text-red-500"
-                          : Number(investor.balance) < 0
-                            ? "text-green-500"
-                            : ""
-                      }`}
+                          : ""
+                        }`}
                     >
                       {formatCurrency(Math.abs(Number(investor.balance || 0)))}
                     </td>
-                    <td className="global_td">
+                    {/* <td className="global_td">
                       {formatDate(investor.CreatedDate)}
-                    </td>
+                    </td> */}
                     <td className="global_td">
                       <div className="flex flex-wrap items-center justify-center gap-2">
                         <button
@@ -293,13 +292,12 @@ const InvestorList = () => {
                     Total Balance
                   </td>
                   <td
-                    className={`global_td ${
-                      totalBalance < 0
-                        ? "text-red-500"
-                        : totalBalance > 0
-                          ? "text-green-500"
-                          : ""
-                    }`}
+                    className={`global_td ${totalBalance < 0
+                      ? "text-red-500"
+                      : totalBalance > 0
+                        ? "text-green-500"
+                        : ""
+                      }`}
                   >
                     {formatCurrency(Math.abs(totalBalance))}
                   </td>

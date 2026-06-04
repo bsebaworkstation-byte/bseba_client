@@ -375,7 +375,7 @@ const BusinessReport = () => {
       (businessValueData?.stock?.totalStockValue || 0) -
       (businessValueData?.debit?.totalDebitAmount || 0) +
       (-businessValueData?.credit?.totalCreditAmount || 0) +
-      (totalBalance || 0),
+      (totalBalance || 0) - Math.abs(investorStats.totalInvestmentBalance || 0),
     [businessValueData, totalBalance],
   );
 
@@ -400,23 +400,8 @@ const BusinessReport = () => {
 
   return (
     <div className="global_container">
-      <div className="global_sub_container grid grid-cols-1 sm:grid-cols-2 gap-2">
-        {/* Stock Section */}
-        <section className="border border-gray-300 dark:border-gray-500 rounded-lg p-2">
-          <h2 className="mb-3 text-lg font-semibold text-gray-700 dark:text-gray-200 text-center">
-            Stock
-          </h2>
-          <div className="flex lg:flex-row flex-col lg:justify-center gap-5">
-            <StatCard
-              title="Total Products"
-              value={businessValueData?.products?.totalProducts?.toFixed(2)}
-            />
-            <StatCard
-              title="Stock Value"
-              value={businessValueData?.stock?.totalStockValue?.toFixed(2)}
-            />
-          </div>
-        </section>
+      <div className="global_sub_container grid grid-cols-1 sm:grid-cols-3 gap-2">
+
 
         {/* Credit Section */}
         <section className="border border-gray-300 dark:border-gray-500 rounded-lg p-2">
@@ -426,9 +411,7 @@ const BusinessReport = () => {
           <div className="flex lg:flex-row flex-col lg:justify-center gap-5">
             <StatCard
               title="Recievable Contact"
-              value={businessValueData?.credit?.totalCreditCustomers?.toFixed(
-                2,
-              )}
+              value={businessValueData?.credit?.totalCreditCustomers}
               color="text-blue-700"
             />
             <StatCard
@@ -447,13 +430,47 @@ const BusinessReport = () => {
           <div className="flex lg:flex-row flex-col lg:justify-center gap-5">
             <StatCard
               title="Payable Contact"
-              value={businessValueData?.debit?.totalDebitCustomers?.toFixed(2)}
+              value={businessValueData?.debit?.totalDebitCustomers}
               color="text-red-700"
             />
             <StatCard
               title="Payable Amount"
               value={businessValueData?.debit?.totalDebitAmount?.toFixed(2)}
               color="text-red-700"
+            />
+          </div>
+        </section>
+
+        <section className="border border-gray-300 dark:border-gray-500 rounded-lg p-2">
+          <h2 className="mb-3 text-lg font-semibold text-gray-700 dark:text-gray-200 text-center">
+            Investment
+          </h2>
+          <div className="flex lg:flex-row flex-col lg:justify-center gap-5">
+            <StatCard
+              title="Total Investors"
+              value={investorStats.count}
+              color="text-blue-700"
+            />
+            <StatCard
+              title="Investment Balance"
+              value={Math.abs(investorStats.totalInvestmentBalance).toFixed(2)}
+              color="text-blue-700"
+            />
+          </div>
+        </section>
+        {/* Stock Section */}
+        <section className="border border-gray-300 dark:border-gray-500 rounded-lg p-2">
+          <h2 className="mb-3 text-lg font-semibold text-gray-700 dark:text-gray-200 text-center">
+            Stock
+          </h2>
+          <div className="flex lg:flex-row flex-col lg:justify-center gap-5">
+            <StatCard
+              title="Total Products"
+              value={businessValueData?.products?.totalProducts}
+            />
+            <StatCard
+              title="Stock Value"
+              value={businessValueData?.stock?.totalStockValue?.toFixed(2)}
             />
           </div>
         </section>
@@ -476,30 +493,7 @@ const BusinessReport = () => {
           </div>
         </section>
 
-        {/* Investment */}
-        <section className="border border-gray-300 dark:border-gray-500 rounded-lg p-2 sm:col-span-2">
-          <h2 className="mb-3 text-lg font-semibold text-gray-700 dark:text-gray-200 text-center">
-            Investment
-          </h2>
-          <div className="flex lg:flex-row flex-col lg:justify-center gap-5">
-            <StatCard
-              title="Total Investors"
-              value={investorStats.count}
-              color="text-blue-700"
-            />
-            <StatCard
-              title="Investment Balance"
-              value={Math.abs(investorStats.totalInvestmentBalance).toFixed(2)}
-              color={
-                investorStats.totalInvestmentBalance > 0
-                  ? "text-red-700"
-                  : investorStats.totalInvestmentBalance < 0
-                    ? "text-green-500"
-                    : "text-gray-700"
-              }
-            />
-          </div>
-        </section>
+
       </div>
       {/* Filter Section */}
       <div className="p-5 rounded-2xl border-2 border-blue-500 mb-6">
@@ -568,9 +562,8 @@ const BusinessReport = () => {
               className="p-3 rounded-2xl  shadow-md border dark:bg-gray-800 border-gray-200 dark:border-gray-500 text-center bg-white hover:shadow-lg transition-shadow duration-200"
             >
               <div
-                className={`text-3xl text-${
-                  item.type === "Cost" ? "yellow" : "green"
-                }-600 mb-2 flex justify-center`}
+                className={`text-3xl text-${item.type === "Cost" ? "yellow" : "green"
+                  }-600 mb-2 flex justify-center`}
               >
                 {item.icon}
               </div>
@@ -578,13 +571,12 @@ const BusinessReport = () => {
                 {item.title}
               </h6>
               <h3
-                className={`text-2xl  font-bold text-${
-                  item.type === "Cost"
-                    ? "yellow"
-                    : item.type === "Dynamic" && item.value < 0
-                      ? "red"
-                      : "green"
-                }-500 mt-1`}
+                className={`text-2xl  font-bold text-${item.type === "Cost"
+                  ? "yellow"
+                  : item.type === "Dynamic" && item.value < 0
+                    ? "red"
+                    : "green"
+                  }-500 mt-1`}
               >
                 {item.value?.toFixed(2) ?? 0}
               </h3>

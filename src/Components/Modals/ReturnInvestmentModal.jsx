@@ -8,6 +8,7 @@ import { useTextTranslate } from "../../TranslationText/useTextTranslate";
 import { GlobalFormTranslator } from "../../TranslationText/GlobalFormTranslator";
 import { GlobalBtnTranslator } from "../../TranslationText/GlobalBtnTranslator";
 import { HeadingTranslate } from "../../TranslationText/GlobalHeadingTranslator";
+import { formatCurrency } from "../../Helper/formatCurrency";
 
 const ReturnInvestmentModal = ({ open, onClose, investor, onSuccess }) => {
   const { setGlobalLoader } = loadingStore();
@@ -36,7 +37,7 @@ const ReturnInvestmentModal = ({ open, onClose, investor, onSuccess }) => {
         if (res.data.status === "Success") {
           const formatted = (res.data.data || []).map((a) => ({
             value: a._id,
-            label: a.name,
+            label: `${a.name} (${a.balance ? formatCurrency(a.balance) : "0"})`,
             ...a,
           }));
           setAccounts(formatted);
@@ -166,15 +167,15 @@ const ReturnInvestmentModal = ({ open, onClose, investor, onSuccess }) => {
           </div>
 
           <div className="flex gap-3 pt-2">
-            <button type="submit" className="global_button flex-1">
-              {btn("add")}
-            </button>
             <button
               type="button"
               onClick={onClose}
               className="global_edit flex-1"
             >
               {btn("cancel")}
+            </button>
+            <button type="submit" className="global_button flex-1">
+              {btn("add")}
             </button>
           </div>
         </form>

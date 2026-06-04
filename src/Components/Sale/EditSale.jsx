@@ -49,7 +49,11 @@ const EditSale = () => {
   const [note, setNote] = useState("");
   const [purchaseDate, setPurchaseDate] = useState(new Date());
   const [payments, setPayments] = useState([]);
+  const [currentBalance, setCurrentBalance] = useState(0);
+  const [previousBalance, setPreviousBalance] = useState(0);
   const [currentSelectedAccounts, setCurrentSelectedAccounts] = useState([]);
+
+  const [total, setTotal] = useState(0);
 
   // banks
   const [banks, setBanks] = useState([]);
@@ -495,6 +499,11 @@ const EditSale = () => {
         setPayments(data.Payments);
       }
       if (data.paid) setRecivedAmount(data.paid);
+      if (data.total) {
+        setTotal(data.total);
+      }
+      if (data.CurrentBalance) setCurrentBalance(data.CurrentBalance);
+      if (data.PreviousBalance) setPreviousBalance(data.PreviousBalance);
       setOldGrandTotal(data.grandTotal);
       if (data.outher) setOtherCostName(data.outher);
       if (data.outherAmount) setCost(data.outherAmount);
@@ -1037,27 +1046,46 @@ const EditSale = () => {
     [grandTotal, recivedAmount, paidAmount, selectedCustomer, oldGrandTotal, selectedCustomer?.balance, currentSelectedAccounts],
   );
 
+
   //  current due formula: (oldGrandTotal - paidAmount) + customer balance
   const balance = -selectedCustomer?.balance;
-  console.log("balance", balance)
-  const currentDue = useMemo(
-    () => {
-      const totalPaid = currentSelectedAccounts.reduce((acc, a) => acc + a.amount, 0);
-      return (balance - oldGrandTotal) + grandTotal - totalPaid;
-    },
-    [oldGrandTotal, recivedAmount, selectedCustomer, currentSelectedAccounts],
-  );
-
-  console.log(" ~ file: EditSale.jsx:1040 ~ oldGrandTotal:", oldGrandTotal)
-  console.log(" ~ file: EditSale.jsx:1042 ~ selectedCustomer balance:", -selectedCustomer?.balance)
-  console.log(" ~ file: EditSale.jsx:1045 ~ currentDue:", currentDue);
-  console.log("recivedAmount", recivedAmount)
-  console.log("paidAmount", paidAmount)
-
   const invoiceDue = useMemo(
     () => grandTotal - (paidAmount || 0),
     [grandTotal, paidAmount],
   );
+
+
+  const thisInvoiceDue = useMemo(() => {
+    const paids = currentSelectedAccounts.reduce((acc, a) => acc + a.amount, 0);
+    return total - paids;
+  }, [total, currentSelectedAccounts]);
+
+  const curr = -currentBalance;
+  const prev = -previousBalance || 0;
+
+
+  const currentDue = useMemo(() => {
+    const paids =
+      currentSelectedAccounts?.reduce(
+        (acc, a) => acc + (Number(a.amount) || 0),
+        0
+      ) || 0;
+
+    if (prev > 0 && curr > 0) {
+      if (curr > 0 && invoiceDue <= 0) {
+        return (curr + prev) - paids;
+      } else {
+        return (curr + invoiceDue) - paids;
+      }
+
+    } else {
+      console.log("case 2");
+      return prev + (grandTotal - paids);
+
+    }
+    return 0;
+  }, [curr, prev, grandTotal, currentSelectedAccounts, invoiceDue]);
+
 
   const selectAccounts = (account) => {
     setSelectedAccounts((prev) => [...prev, account]);
@@ -1074,8 +1102,6 @@ const EditSale = () => {
   };
   const handleAccountAmountChange = (accountId, value) => {
     let newVal = value === "" ? 0 : Number(value);
-
-    // if (newVal > grandTotal) newVal = grandTotal; // grandTotal limit ধরে রাখো
 
     setCurrentSelectedAccounts((prev) =>
       prev.map((acc) =>
@@ -1481,7 +1507,7 @@ const EditSale = () => {
           ? {
             contactID: selectedCustomer.value,
             ...(invoiceDue > 0 ? { dueAmount: invoiceDue } : {}),
-            PreviousBalance: selectedCustomer.balance || 0,
+            PreviousBalance: previousBalance ? previousBalance : 0,
             CurrentBalance: currentDue,
 
           }
@@ -1567,7 +1593,6 @@ const EditSale = () => {
 
     if (payments.length > 0 && banks.length > 0) {
       const result = handleAddPaymentAccount(banks, payments);
-      console.log("result", result);
       setCurrentSelectedAccounts(result);
     }
   }, [banks, payments])
@@ -2278,7 +2303,7 @@ const EditSale = () => {
                 </label>
                 <input
                   type="number"
-                  value={Math.abs(selectedCustomer.balance.toFixed(2))}
+                  value={Math.abs(previousBalance.toFixed(2))}
                   disabled
                   className="global_input w-40 rounded-sm cursor-not-allowed text-right text-red-500 font-medium"
                 />

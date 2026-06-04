@@ -21,7 +21,7 @@ const LanguageSelector = () => {
   return (
     <select value={lang} onChange={handleChange} className="global_dropdown">
       {language.map((item, index) => (
-        <option  value={item?.value}>{item?.text}</option>
+        <option key={index} value={item?.value}>{item?.text}</option>
       ))}
     </select>
   );
