@@ -128,6 +128,10 @@ export const HeadingTranslate = {
     en: "Add Damage",
     bn: "ক্ষতি যোগ করুন",
   },
+  damageDetails: {
+    en: "Damage Details",
+    bn: "ক্ষতির বিবরণ",
+  },
  categoryWiseTotal: {
   en: "Category Wise Total",
   bn: "শ্রেণি অনুযায়ী মোট",

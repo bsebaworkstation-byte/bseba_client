@@ -39,6 +39,7 @@ import {
   RiRedPacketLine,
   RiContactsBook3Line,
   RiTeamLine,
+  RiFileDamageLine,
 } from "react-icons/ri";
 import { FcSalesPerformance } from "react-icons/fc";
 import { GrContactInfo, GrCertificate, GrServices } from "react-icons/gr";
@@ -419,8 +420,15 @@ const MasterLayout = ({ children }) => {
         ? [
           {
             id: "Damage",
-            title: t("damage"),
-            icon: <FaSortAmountUp />,
+            title: (
+              <div className="flex items-center gap-2">
+                {t("damage")}
+                <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold animate-pulse">
+                  NEW
+                </span>
+              </div>
+            ),
+            icon: <RiFileDamageLine />,
             children: [
               {
                 id: "AddDamage",

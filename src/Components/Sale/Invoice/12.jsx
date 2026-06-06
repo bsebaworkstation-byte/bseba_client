@@ -383,10 +383,10 @@ const Invoice12 = () => {
                                                 </span>
                                             </td>
                                             <td
-                                                className="p-1 text-[15px] text-center font-semibold whitespace-nowrap"
+                                                className="p-1 text-[15px] text-center whitespace-nowrap"
                                                 style={{ border: `1px solid ${accentDeep}` }}
                                             >
-                                                {toBanglaNumber(p?.quantity)} {p?.unit}
+                                                <span className="font-semibold">                                                {toBanglaNumber(p?.quantity)}</span> {p?.unit}
                                             </td>
                                             {hasWarranty && (
                                                 <td
@@ -467,7 +467,7 @@ const Invoice12 = () => {
 
                     {/* ============== TOTALS / NOTE ============== */}
                     <div className="relative px-8 flex gap-2 mt-2">
-                        <div className="flex flex-col gap-1 w-[60%]">
+                        <div className="flex flex-col gap-1 w-[50%]">
                             <span className="text-[18px]">
                                 <span className="font-semibold" style={{ color: accentDeep }}>
                                     কথায়:
@@ -484,7 +484,7 @@ const Invoice12 = () => {
                             )}
                         </div>
 
-                        <div className="w-[40%] text-[18px]">
+                        <div className="w-[50%] text-[18px]">
                             <p className="flex justify-between font-semibold">
                                 <span>মোট:</span>
                                 <span>{formatCurrencyToBangla(details?.SaleSummary?.total)} টাকা</span>
@@ -521,13 +521,6 @@ const Invoice12 = () => {
                                     </p>
                                 )}
 
-                            {details?.SaleSummary?.paid ? (
-                                <p className="flex justify-between font-semibold">
-                                    <span>জমা:</span>
-                                    <span>{formatCurrencyToBangla(details?.SaleSummary?.paid)} টাকা</span>
-                                </p>
-                            ) : null}
-
                             {details?.SaleSummary?.PreviousBalance ? (
                                 <p className="flex justify-between font-semibold">
                                     <span>
@@ -543,6 +536,16 @@ const Invoice12 = () => {
                                     </span>
                                 </p>
                             ) : null}
+
+
+                            {details?.SaleSummary?.paid ? (
+                                <p className="flex justify-between font-semibold">
+                                    <span>জমা:</span>
+                                    <span>{formatCurrencyToBangla(details?.SaleSummary?.paid)} টাকা</span>
+                                </p>
+                            ) : null}
+
+
 
                             {details?.SaleSummary?.CurrentBalance ? (
                                 <p className="flex justify-between font-semibold">

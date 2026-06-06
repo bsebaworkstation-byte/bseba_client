@@ -21,7 +21,7 @@ import {
 import { GiProfit } from "react-icons/gi";
 
 import { MdAttachMoney, MdPayments, MdInventory } from "react-icons/md";
-import { RiRefund2Line } from "react-icons/ri";
+import { RiFileDamageLine, RiRefund2Line } from "react-icons/ri";
 import { HiOutlineSupport } from "react-icons/hi";
 
 import DatePicker from "react-datepicker";
@@ -234,6 +234,11 @@ const BusinessReport = () => {
       icon: <FaWallet />,
     },
     {
+      title: "Total Damage",
+      value: data?.damage?.totalDamage?.toFixed(2),
+      icon: <RiFileDamageLine />,
+    },
+    {
       title: "Purchase Others Cost",
       value: data?.purchases?.totalPurchasesCost?.toFixed(2),
       icon: <FaBoxes />,
@@ -328,7 +333,7 @@ const BusinessReport = () => {
     {
       title: "Net Profit",
       value:
-        ((data?.sales?.totalProfit || 0) +
+        (((data?.sales?.totalProfit || 0) +
           (data?.servicePayment?.ServicePaid || 0) +
           (data?.sales?.totalOutherAmount || 0) +
           (data?.discounts?.totalDiscountCredit || 0) +
@@ -339,7 +344,7 @@ const BusinessReport = () => {
             (data?.servicePayment?.ServiceRefund || 0) +
             (data?.saleReturns?.totalSaleReturnProfitLoss || 0) +
             (data?.warrantyCost?.totalWarrantyDebit || 0) +
-            (data?.discounts?.totalDiscountDebit || 0))).toFixed(2),
+            (data?.discounts?.totalDiscountDebit || 0))).toFixed(2)),
       icon: <FaChartLine />,
       type: "Dynamic",
     },

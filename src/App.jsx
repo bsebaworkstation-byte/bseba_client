@@ -34,6 +34,7 @@ import ExpenseByIDPage from "./Pages/Expense/ExpenseByIDPage";
 import ExpenseDetailsPage from "./Pages/Expense/ExpenseDetailsPage";
 import PurchaseReturnListPage from "./Pages/Purchase/PurchaseReturnListPage";
 import AddDamagePage from "./Pages/Damage/AddDamagePage";
+import DamageDetailsPage from "./Pages/Damage/DamageDetailsPage";
 import DamageListPage from "./Pages/Damage/DamageList";
 import SalsReportPage from "./Pages/Report/SalsReportPage";
 import BusinessReportPage from "./Pages/Report/BusinessReportPage";
@@ -337,6 +338,10 @@ function App() {
 
             <Route path="/AddDamage" element={<AddDamagePage />} />
             <Route path="/DamageList" element={<DamageListPage />} />
+            <Route
+              path="/DamageDetails/:id"
+              element={<DamageDetailsPage />}
+            />
 
             <Route path="/PosSale" element={<PosSalePage />} />
 

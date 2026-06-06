@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import loadingStore from "../../Zustand/LoadingStore";
 import { ErrorToast } from "../../Helper/FormHelper";
 import { printElement } from "../../Helper/Printer";
@@ -103,12 +104,15 @@ const DamageList = () => {
               <th className="global_th">{table("total")}</th>
               <th className="global_th">{table("createdBy")}</th>
               <th className="global_th">{table("date")}</th>
+              <th className="global_th" id="no-print">
+                {table("action")}
+              </th>
             </tr>
           </thead>
           <tbody className="global_tbody">
             {damages.length === 0 ? (
               <tr className="global_tr">
-                <td colSpan={5} className="text-center py-4 text-gray-500">
+                <td colSpan={6} className="text-center py-4 text-gray-500">
                   No damage records found
                 </td>
               </tr>
@@ -118,7 +122,14 @@ const DamageList = () => {
                   <td className="global_td">
                     {(page - 1) * limit + idx + 1}
                   </td>
-                  <td className="global_td">{item.referenceNo || "N/A"}</td>
+                  <td className="global_td">
+                    <Link
+                      to={`/DamageDetails/${item._id}`}
+                      className="text-nowrap"
+                    >
+                      {item.referenceNo || "N/A"}
+                    </Link>
+                  </td>
                   <td className="global_td">
                     {formatCurrency(item.total || 0)}
                   </td>
@@ -133,6 +144,14 @@ const DamageList = () => {
                       </span>
                     </span>
                   </td>
+                  <td className="global_td" id="no-print">
+                    <Link
+                      to={`/DamageDetails/${item._id}`}
+                      className="global_button"
+                    >
+                      {btn("view")}
+                    </Link>
+                  </td>
                 </tr>
               ))
             )}
@@ -146,7 +165,7 @@ const DamageList = () => {
                 <td className="global_td font-medium">
                   {formatCurrency(totalAmount)}
                 </td>
-                <td colSpan={2} className="global_td" />
+                <td colSpan={3} className="global_td" />
               </tr>
             </tfoot>
           )}
