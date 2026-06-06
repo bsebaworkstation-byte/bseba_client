@@ -78,7 +78,7 @@ const Invoice12 = () => {
     // Brand colour used in the curved letterhead decoration
     const accent = "#7FD6D6"; // soft cyan/turquoise as per the reference letterhead
     const accentSoft = "#CFEFEF";
-    const accentDeep = "#1F8C8C";
+    const accentDeep = "black";
 
     const toBanglaNumber = (num) =>
         new Intl.NumberFormat('bn-BD', {
@@ -469,14 +469,14 @@ const Invoice12 = () => {
                     <div className="relative px-8 flex gap-2 mt-2">
                         <div className="flex flex-col gap-1 w-[50%]">
                             <span className="text-[18px]">
-                                <span className="font-semibold" style={{ color: accentDeep }}>
+                                <span className="font-semibold" style={{ color: "black" }}>
                                     কথায়:
                                 </span>{" "}
-                                <span className="font-bold">{numberToWordsInBangla(details?.SaleSummary?.grandTotal)}</span>
+                                <span className="font-bold text-[15px]">{numberToWordsInBangla(details?.SaleSummary?.grandTotal)}</span>
                             </span>
                             {details?.SaleSummary?.note && (
                                 <p className="text-sm break-words whitespace-normal">
-                                    <span className="font-semibold" style={{ color: accentDeep }}>
+                                    <span className="font-semibold" style={{ color: "black" }}>
                                         Note:
                                     </span>{" "}
                                     {details.SaleSummary.note}
@@ -512,7 +512,7 @@ const Invoice12 = () => {
                                 details?.SaleSummary?.outherAmount > 0) && (
                                     <p
                                         className="flex justify-between font-bold"
-                                        style={{ color: accentDeep }}
+                                        style={{ color: "black" }}
                                     >
                                         <span>Grand Total:</span>
                                         <span>
@@ -574,13 +574,13 @@ const Invoice12 = () => {
                             <div className="text-center">
                                 <div
                                     style={{
-                                        borderTop: `1px solid ${accentDeep}`,
+                                        borderTop: `1px solid black`,
                                         minWidth: "180px",
                                     }}
                                 />
                                 <p
                                     className="italic text-[13px] mt-1"
-                                    style={{ color: accentDeep }}
+                                    style={{ color: "black" }}
                                 >
                                     গ্রাহকের স্বাক্ষর
                                 </p>
@@ -588,13 +588,13 @@ const Invoice12 = () => {
                             <div className="text-center">
                                 <div
                                     style={{
-                                        borderTop: `1px solid ${accentDeep}`,
+                                        borderTop: `1px solid ${"black"}`,
                                         minWidth: "180px",
                                     }}
                                 />
                                 <p
                                     className="italic text-[13px] mt-1"
-                                    style={{ color: accentDeep }}
+                                    style={{ color: "black" }}
                                 >
                                     অনুমোদনকারী স্বাক্ষর
                                 </p>
