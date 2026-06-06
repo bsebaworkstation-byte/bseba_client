@@ -333,7 +333,7 @@ const BusinessReport = () => {
     {
       title: "Net Profit",
       value:
-        (((data?.sales?.totalProfit || 0) +
+        ((((data?.sales?.totalProfit || 0) +
           (data?.servicePayment?.ServicePaid || 0) +
           (data?.sales?.totalOutherAmount || 0) +
           (data?.discounts?.totalDiscountCredit || 0) +
@@ -344,7 +344,7 @@ const BusinessReport = () => {
             (data?.servicePayment?.ServiceRefund || 0) +
             (data?.saleReturns?.totalSaleReturnProfitLoss || 0) +
             (data?.warrantyCost?.totalWarrantyDebit || 0) +
-            (data?.discounts?.totalDiscountDebit || 0))).toFixed(2)),
+            (data?.discounts?.totalDiscountDebit || 0))).toFixed(2))) - (data?.damage?.totalDamage || 0),
       icon: <FaChartLine />,
       type: "Dynamic",
     },
