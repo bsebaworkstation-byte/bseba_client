@@ -398,7 +398,6 @@ const BusinessReport = () => {
     <div className="global_container">
       <div className="global_sub_container grid grid-cols-1 sm:grid-cols-3 gap-2">
 
-
         {/* Credit Section */}
         <section className="border border-gray-300 dark:border-gray-500 rounded-lg p-2">
           <h2 className="mb-3 text-lg font-semibold text-gray-700 dark:text-gray-200 text-center">
