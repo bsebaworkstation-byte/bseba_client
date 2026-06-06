@@ -25,7 +25,7 @@ const AddNewNavbar = () => {
   const { lang } = useLanguageStore();
   const { modalOpen, modalType, closeModal } = openCloseStore();
   const business = getBusinessDetails();
-    const btn = useTextTranslate(GlobalBtnTranslator)
+  const btn = useTextTranslate(GlobalBtnTranslator)
 
   const items = useMemo(
     () => [
@@ -34,7 +34,7 @@ const AddNewNavbar = () => {
         icon: <AiOutlineShoppingCart />,
         path: "/NewProduct",
       },
-       {
+      {
         name: t("productList"),
         icon: <FaListUl />,
         path: "/ProductList",
@@ -51,12 +51,12 @@ const AddNewNavbar = () => {
       },
       ...(business.warranty === "0"
         ? [
-            {
-              name: t("posSale"),
-              icon: <MdPointOfSale />,
-              path: "/PosSale",
-            },
-          ]
+          {
+            name: t("posSale"),
+            icon: <MdPointOfSale />,
+            path: "/PosSale",
+          },
+        ]
         : []),
       {
         name: t("expense"),
@@ -98,13 +98,17 @@ const AddNewNavbar = () => {
         icon: <TbTransferIn />,
         path: "/Transfer",
       },
-      {
-        name: t("addDamage"),
-        icon: <RiFileDamageLine />,
-        path: "/AddDamage",
-      },
+      ...(Number(business?.damage) === 1
+        ? [
+            {
+              name: t("addDamage"),
+              icon: <RiFileDamageLine />,
+              path: "/AddDamage",
+            },
+          ]
+        : []),
     ],
-    [business.warranty, lang]
+    [business.warranty, business.damage, lang]
   );
 
   useEffect(() => {
@@ -126,10 +130,9 @@ const AddNewNavbar = () => {
         onClick={(e) => e.stopPropagation()}
         className={`bg-white dark:bg-[#1E2939] dark:text-white rounded-xl shadow-2xl p-6 w-full max-w-2xl 
           transform transition-all duration-300
-          ${
-            modalOpen
-              ? "translate-y-0 opacity-100"
-              : "-translate-y-10 opacity-0"
+          ${modalOpen
+            ? "translate-y-0 opacity-100"
+            : "-translate-y-10 opacity-0"
           }
         `}
       >
@@ -142,7 +145,7 @@ const AddNewNavbar = () => {
             onClick={closeModal}
             className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm"
           >
-           {btn("close")}
+            {btn("close")}
           </button>
         </div>
 

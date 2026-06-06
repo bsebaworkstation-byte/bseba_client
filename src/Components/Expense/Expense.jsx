@@ -64,7 +64,7 @@ const Expense = () => {
       const res = await api.get(`/AllAccount`);
       if (res.data?.status === "Success") {
         setAllAccount(
-          res.data.data.map((item) => ({ value: item._id, label: item.name })),
+          res.data.data.map((item) => ({ value: item._id, label: `${item.name} (${item.balance}) ${item.balance}` })),
         );
       } else {
         setAllAccount([]);

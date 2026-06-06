@@ -190,128 +190,128 @@ const BusinessReport = () => {
   const cards = [
     {
       title: "Total Sales",
-      value: data?.sales?.totalSales,
+      value: data?.sales?.totalSales?.toFixed(2),
       icon: <FaCashRegister />,
     },
     {
       title: "Total Paid Sales",
-      value: data?.sales?.totalPaidSales,
+      value: data?.sales?.totalPaidSales?.toFixed(2),
       icon: <MdPayments />,
     },
     {
       title: "Total Due Sales",
-      value: data?.sales?.totalDueSales,
+      value: data?.sales?.totalDueSales?.toFixed(2),
       icon: <FaMoneyBillWave />,
     },
     {
       title: "Sales Profit",
-      value: data?.sales?.totalProfit,
+      value: data?.sales?.totalProfit?.toFixed(2),
       icon: <GiProfit />,
     },
     {
       title: "Others Sales Earned",
-      value: data?.sales?.totalOutherAmount,
+      value: data?.sales?.totalOutherAmount?.toFixed(2),
       icon: <FaPercent />,
     },
     {
       title: "Total Vat",
-      value: data?.sales?.totalVat,
+      value: data?.sales?.totalVat?.toFixed(2),
       icon: <FaCashRegister />,
     },
     {
       title: "Total Purchases",
-      value: data?.purchases?.totalPurchases,
+      value: data?.purchases?.totalPurchases?.toFixed(2),
       icon: <FaShoppingCart />,
     },
     {
       title: "Total Paid Purchases",
-      value: data?.purchases?.totalPaidPurchases,
+      value: data?.purchases?.totalPaidPurchases?.toFixed(2),
       icon: <FaCoins />,
     },
     {
       title: "Total Due Purchases",
-      value: data?.purchases?.totalDuePurchases,
+      value: data?.purchases?.totalDuePurchases?.toFixed(2),
       icon: <FaWallet />,
     },
     {
       title: "Purchase Others Cost",
-      value: data?.purchases?.totalPurchasesCost,
+      value: data?.purchases?.totalPurchasesCost?.toFixed(2),
       icon: <FaBoxes />,
       type: "Cost",
     },
 
     {
       title: "Expense",
-      value: data?.expenses?.totalExpenses,
+      value: data?.expenses?.totalExpenses?.toFixed(2),
       icon: <FaMoneyBillWave />,
       type: "Cost",
     },
     {
       title: "Salary",
-      value: data?.salary?.totalSalary,
+      value: data?.salary?.totalSalary?.toFixed(2),
       icon: <FaHandshake />,
       type: "Cost",
     },
     {
       title: "Warranty Cost",
-      value: data?.warrantyCost?.totalWarrantyDebit,
+      value: data?.warrantyCost?.totalWarrantyDebit?.toFixed(2),
       icon: <FaWrench />,
       type: "Cost",
     },
 
     {
       title: "Total Sale Return",
-      value: data?.saleReturns?.totalSaleReturn,
+      value: data?.saleReturns?.totalSaleReturn?.toFixed(2),
       icon: <RiRefund2Line />,
       type: "Cost",
     },
     {
       title: "Sale Return Loss",
-      value: data?.saleReturns?.totalSaleReturnProfitLoss,
+      value: data?.saleReturns?.totalSaleReturnProfitLoss?.toFixed(2),
       icon: <FaUndo />,
       type: "Cost",
     },
     {
       title: "Service Refunded",
-      value: data?.servicePayment?.ServiceRefund,
+      value: data?.servicePayment?.ServiceRefund?.toFixed(2),
       icon: <FaUndo />,
       type: "Cost",
     },
     {
       title: "Discount Payment",
-      value: data?.discounts?.totalDiscountDebit,
+      value: data?.discounts?.totalDiscountDebit?.toFixed(2),
       icon: <FaUndo />,
       type: "Cost",
     },
     {
       title: "Warranty Earned",
-      value: data?.warrantyCost?.totalWarrantyCredit,
+      value: data?.warrantyCost?.totalWarrantyCredit?.toFixed(2),
       icon: <HiOutlineSupport />,
     },
     {
       title: "Discount Received",
-      value: data?.discounts?.totalDiscountCredit,
+      value: data?.discounts?.totalDiscountCredit?.toFixed(2),
       icon: <MdAttachMoney />,
     },
     {
       title: "Total Received",
-      value: data?.transactions?.totalCredit,
+      value: data?.transactions?.totalCredit?.toFixed(2),
       icon: <MdAttachMoney />,
     },
     {
       title: "Total Paid",
-      value: data?.transactions?.totalDebit,
+      value: data?.transactions?.totalDebit?.toFixed(2),
       icon: <FaCoins />,
     },
 
     {
       title: "Service",
-      value: data?.service?.totalService,
+      value: data?.service?.totalService?.toFixed(2),
       icon: <FaFileInvoiceDollar />,
     },
     {
       title: "Service Paid",
-      value: data?.servicePayment?.ServicePaid,
+      value: data?.servicePayment?.ServicePaid?.toFixed(2),
       icon: <GiProfit />,
     },
     {
@@ -321,25 +321,25 @@ const BusinessReport = () => {
     },
     {
       title: "Total Suppliers",
-      value: data?.suppliers?.totalSuppliers,
+      value: (data?.suppliers?.totalSuppliers),
       icon: <FaTruck />,
     },
 
     {
       title: "Net Profit",
       value:
-        (data?.sales?.totalProfit || 0) +
-        (data?.servicePayment?.ServicePaid || 0) +
-        (data?.sales?.totalOutherAmount || 0) +
-        (data?.discounts?.totalDiscountCredit || 0) +
-        (data?.warrantyCost?.totalWarrantyCredit || 0) -
-        ((data?.expenses?.totalExpenses || 0) +
-          (data?.purchases?.totalPurchasesCost || 0) +
-          (data?.salary?.totalSalary || 0) +
-          (data?.servicePayment?.ServiceRefund || 0) +
-          (data?.saleReturns?.totalSaleReturnProfitLoss || 0) +
-          (data?.warrantyCost?.totalWarrantyDebit || 0) +
-          (data?.discounts?.totalDiscountDebit || 0)),
+        ((data?.sales?.totalProfit || 0) +
+          (data?.servicePayment?.ServicePaid || 0) +
+          (data?.sales?.totalOutherAmount || 0) +
+          (data?.discounts?.totalDiscountCredit || 0) +
+          (data?.warrantyCost?.totalWarrantyCredit || 0) -
+          ((data?.expenses?.totalExpenses || 0) +
+            (data?.purchases?.totalPurchasesCost || 0) +
+            (data?.salary?.totalSalary || 0) +
+            (data?.servicePayment?.ServiceRefund || 0) +
+            (data?.saleReturns?.totalSaleReturnProfitLoss || 0) +
+            (data?.warrantyCost?.totalWarrantyDebit || 0) +
+            (data?.discounts?.totalDiscountDebit || 0))).toFixed(2),
       icon: <FaChartLine />,
       type: "Dynamic",
     },
@@ -360,16 +360,7 @@ const BusinessReport = () => {
       totalInvestmentBalance,
     };
   }, [investors]);
-  // const businessAsset = useMemo(
-  //   () =>
-  //     -(
-  //       businessValueData?.stock?.totalStockValue -
-  //       businessValueData?.debit?.totalDebitAmount +
-  //       businessValueData?.credit?.totalCreditAmount -
-  //       totalBalance
-  //     ),
-  //   [businessValueData, totalBalance]
-  // );
+
   const businessAsset = useMemo(
     () =>
       (businessValueData?.stock?.totalStockValue || 0) -
@@ -535,19 +526,6 @@ const BusinessReport = () => {
               menuPortalTarget={document.body}
               styles={getReactSelectStyles()}
             />
-            {/* <Select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              // className="global_input w-full "
-              classNamePrefix="react-select"
-            >
-              <option value="thisWeek">This Week</option>
-              <option value="lastWeek">Last Week</option>
-              <option value="thisMonth">This Month</option>
-              <option value="lastMonth">Last Month</option>
-              <option value="thisYear">This Year</option>
-              <option value="lastYear">Last Year</option>
-            </Select> */}
           </div>
         </div>
       </div>
@@ -578,7 +556,7 @@ const BusinessReport = () => {
                     : "green"
                   }-500 mt-1`}
               >
-                {item.value?.toFixed(2) ?? 0}
+                {item.value || 0}
               </h3>
             </div>
           ))}

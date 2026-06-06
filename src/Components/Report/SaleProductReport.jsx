@@ -7,6 +7,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import { FaPrint } from "react-icons/fa";
 import { getDateRange } from "../../Helper/dateRangeHelper";
+import { printElement } from "../../Helper/Printer";
 
 const SaleProductReport = () => {
   const [reportData, setReportData] = useState([]);
@@ -113,7 +114,7 @@ const SaleProductReport = () => {
         </div>
       </div>
 
-      <div className="global_sub_container">
+      <div ref={printRef} className="global_sub_container">
         <div className="grid grid-cols-1 md:grid-cols-12 mt-4 mb-6 gap-4 items-end">
           <div className="md:col-span-3">
             <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">
@@ -233,9 +234,8 @@ const SaleProductReport = () => {
                       })}
                     </td>
                     <td
-                      className={`global_td text-right font-bold ${
-                        item.profit >= 0 ? "text-green-600" : "text-red-600"
-                      }`}
+                      className={`global_td text-right font-bold ${item.profit >= 0 ? "text-green-600" : "text-red-600"
+                        }`}
                     >
                       {Number(item.profit).toLocaleString(undefined, {
                         minimumFractionDigits: 2,

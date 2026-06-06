@@ -18,6 +18,8 @@ import { createPortal } from "react-dom";
 import loadingStore from "../../Zustand/LoadingStore";
 import { getReactSelectStyles } from "../../Helper/reactSelectStyles";
 import api from "../../Helper/axios_resonse_interceptor";
+import { FaPrint } from "react-icons/fa";
+import { printElement } from "../../Helper/Printer";
 
 const DalyReport = () => {
   const [dalyReportData, setDalyReportData] = useState({});
@@ -31,6 +33,9 @@ const DalyReport = () => {
   const { setGlobalLoader } = loadingStore();
   const componentRef = useRef();
 
+  const handlePrint = () => {
+    printElement(componentRef, "Stock Report");
+  };
   const periodOptions = [
     { value: "", label: "Custom" },
     { value: "thisWeek", label: "This Week" },
@@ -340,6 +345,17 @@ const DalyReport = () => {
             </p>
           )}
         </div>
+
+      </div>
+      {/* print button */}
+      <div className="flex justify-center mt-5">
+        <button
+          type="button"
+          onClick={handlePrint}
+          className="global_button_red flex items-center gap-2 shrink-0 print:hidden"
+        >
+          <FaPrint /> Print
+        </button>
       </div>
     </div>
   );

@@ -261,17 +261,17 @@ const SaleList = () => {
         {sales.length === 0 ? (
           <div className="text-center">No sales found</div>
         ) : (
-          <div className="overflow-auto">
+          <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
             <table className="global_table w-full" ref={printRef}>
-              <thead className="global_thead">
+              <thead className="global_thead sticky top-0 z-10">
                 <tr>
-                  <th className="global_th">{table("no")}</th>
-                  <th className="global_th">{table("name")}</th>
-                  <th className="global_th">{formTrans("grandTotal")}</th>
-                  <th className="global_th">{table("paid")}</th>
-                  <th className="global_th">{table("due")}</th>
-                  <th className="global_th">{table("createdBy")}</th>
-                  <th className="global_th">{table("date")}</th>
+                  <th className="global_th global_thead">{table("no")}</th>
+                  <th className="global_th global_thead">{table("name")}</th>
+                  <th className="global_th global_thead">{formTrans("grandTotal")}</th>
+                  <th className="global_th global_thead">{table("paid")}</th>
+                  <th className="global_th global_thead">{table("due")}</th>
+                  <th className="global_th global_thead">{table("createdBy")}</th>
+                  <th className="global_th global_thead">{table("date")}</th>
                   {isAdmin() && (
                     <th className="global_th">
                       <button

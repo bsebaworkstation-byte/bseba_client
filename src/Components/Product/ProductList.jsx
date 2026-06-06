@@ -275,12 +275,12 @@ const ProductList = () => {
       {/* Table */}
       {products.length > 0 ? (
         <div>
-          <div className="overflow-x-auto">
-            <table className="global_table">
-              <thead className="global_thead">
+          <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
+            <table className="global_table w-full">
+              <thead className="global_thead sticky top-0 z-10">
                 <tr>
-                  <th className="global_th">{table("no")}</th>
-                  <th className="global_th">
+                  <th className="global_th global_thead">{table("no")}</th>
+                  <th className="global_th global_thead">
                     <button
                       className="w-full text-left flex items-center gap-2"
                       onClick={sortProductListByName}
@@ -295,7 +295,7 @@ const ProductList = () => {
                       ) : null}
                     </button>
                   </th>
-                  <th className="global_th">
+                  <th className="global_th global_thead">
                     <button
                       className="w-full text-left flex items-center gap-2"
                       onClick={sortProductListByBrand}
@@ -310,7 +310,7 @@ const ProductList = () => {
                       ) : null}
                     </button>
                   </th>
-                  <th className="global_th">
+                  <th className="global_th global_thead">
                     <button
                       className="w-full text-left flex items-center gap-2"
                       onClick={sortProductListByCategory}
@@ -325,7 +325,7 @@ const ProductList = () => {
                       ) : null}
                     </button>
                   </th>
-                  <th className="global_th">
+                  <th className="global_th global_thead">
                     {" "}
                     <button
                       className="w-full text-left flex items-center gap-2"
@@ -341,7 +341,7 @@ const ProductList = () => {
                     </button>
                   </th>
                   {showPurchase === 1 && (
-                    <th className="global_th">
+                    <th className="global_th global_thead">
                       <button
                         className="w-full text-left flex items-center gap-2"
                         onClick={sortProductListByPurchasePrice}
@@ -357,7 +357,7 @@ const ProductList = () => {
                       </button>
                     </th>
                   )}
-                  <th className="global_th">
+                  <th className="global_th global_thead">
                     <button
                       className="w-full text-left flex items-center gap-2"
                       onClick={sortProductListBySalePrice}
@@ -372,11 +372,11 @@ const ProductList = () => {
                       ) : null}
                     </button>
                   </th>
-                  <th className="global_th"> {formTrans("dealerPrice")}</th>
+                  <th className="global_th global_thead"> {formTrans("dealerPrice")}</th>
                   {/* <th className="global_th">Manage Stock</th> */}
-                  <th className="global_th"> {formTrans("barcode")}</th>
+                  <th className="global_th global_thead"> {formTrans("barcode")}</th>
                   {/* <th className="global_th">Created</th> */}
-                  {can("EditProduct") && <th className="global_th">{table("action")}</th>}
+                  {can("EditProduct") && <th className="global_th global_thead">{table("action")}</th>}
                 </tr>
               </thead>
               <tbody className="global_tbody">
@@ -487,11 +487,10 @@ const ProductList = () => {
               // className={`px-4 dark:text-gray-800 py-2 rounded-r-md rounded-l-full ${
               //   page === 1 ? "bg-gray-200 cursor-not-allowed" : "global_button"
               // }`}
-              className={`px-4 py-2 rounded-r-md rounded-l-full ${
-                page === 1
-                  ? "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
-                  : "global_button"
-              }`}
+              className={`px-4 py-2 rounded-r-md rounded-l-full ${page === 1
+                ? "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
+                : "global_button"
+                }`}
             >
               {table("previous")}
             </button>
@@ -506,11 +505,10 @@ const ProductList = () => {
               //     ? "bg-gray-200  cursor-not-allowed"
               //     : "global_button"
               // }`}
-              className={`px-4 py-2 rounded-l-md rounded-r-full ${
-                page >= Math.ceil(total / limit)
-                  ? "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
-                  : "global_button"
-              }`}
+              className={`px-4 py-2 rounded-l-md rounded-r-full ${page >= Math.ceil(total / limit)
+                ? "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
+                : "global_button"
+                }`}
             >
               {table("next")}
             </button>

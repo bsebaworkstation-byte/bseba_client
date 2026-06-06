@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { toast } from "react-hot-toast";
 import { AiOutlineEye } from "react-icons/ai";
 import "react-datepicker/dist/react-datepicker.css";
@@ -7,7 +7,8 @@ import loadingStore from "../../Zustand/LoadingStore";
 import api from "../../Helper/axios_resonse_interceptor";
 import { getDateRange } from "../../Helper/dateRangeHelper";
 import DatePicker from "react-datepicker";
-import { FaCalendarAlt } from "react-icons/fa";
+import { FaCalendarAlt, FaPrint } from "react-icons/fa";
+import { printElement } from "../../Helper/Printer";
 
 const TransactionReport = () => {
   const [transactions, setTransactions] = useState([]);
@@ -19,7 +20,10 @@ const TransactionReport = () => {
   const [endDate, setEndDate] = useState(new Date());
   const [selectedRange, setSelectedRange] = useState("This Month");
   const [initialized, setInitialized] = useState(false);
-
+  const printRef = useRef(null);
+  const handlePrint = () => {
+    printElement(printRef, "Stock Report");
+  };
   const toISO = (date, end = false) => {
     const d = new Date(date);
 
@@ -179,7 +183,7 @@ const TransactionReport = () => {
       </div>
 
       {/* Table */}
-      <div className="global_sub_container overflow-x-auto">
+      <div ref={printRef} className="global_sub_container overflow-x-auto">
         <table className="global_table">
           <thead className="global_thead">
             <tr>
@@ -228,9 +232,8 @@ const TransactionReport = () => {
                   </td>
                   <td className="global_td">
                     {t.contactDetails
-                      ? `${t.contactDetails.name || "N/A"}, ${
-                          t.contactDetails.mobile || "N/A"
-                        }`
+                      ? `${t.contactDetails.name || "N/A"}, ${t.contactDetails.mobile || "N/A"
+                      }`
                       : "No Contact"}
                     <br />
                     {t.contactDetails?.address || "N/A"}
@@ -239,10 +242,10 @@ const TransactionReport = () => {
                     {t.salereturnID
                       ? "Sale Return"
                       : t.saleID
-                      ? "Sale"
-                      : t.purchaseID
-                      ? "Purchase"
-                      : "Direct Txn"}
+                        ? "Sale"
+                        : t.purchaseID
+                          ? "Purchase"
+                          : "Direct Txn"}
                   </td>
                   <td className="global_td">{t.Debit?.toFixed(2) || "0.00"}</td>
                   <td className="global_td">
@@ -345,6 +348,17 @@ const TransactionReport = () => {
             </tr>
           </tfoot>
         </table>
+
+        {/* print button */}
+        <div className="flex justify-center mt-5">
+          <button
+            type="button"
+            onClick={handlePrint}
+            className="global_button_red flex items-center gap-2 shrink-0 print:hidden"
+          >
+            <FaPrint /> Print
+          </button>
+        </div>
       </div>
     </div>
   );

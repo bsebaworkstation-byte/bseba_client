@@ -148,11 +148,9 @@ const NewSale = () => {
         setProducts(
           raowProducts.map((p) => ({
             value: p._id,
-            label: `${p.name} (${p.Brands.name}) (${
-              p.Categories.name
-            }) (stock - ${p.manageStock === 0 ? "∞" : p.qty})(Barcode ${
-              p.barcode
-            })`,
+            label: `${p.name} (${p.Brands.name}) (${p.Categories.name
+              }) (stock : ${p.manageStock === 0 ? "∞" : p.qty})(Barcode ${p.barcode
+              })`,
             ...p,
             isDisabled: p.manageStock === 1 && p.qty === 0,
           })),
@@ -172,11 +170,10 @@ const NewSale = () => {
       const res = await api.get(`/Stock/${id}`);
       if (res.data.status === "Success") {
         return res.data.data.map((s) => ({
-          label: ` ${
-            s.productCode === "0" || !s.productCode
-              ? ""
-              : `Code ${s.productCode}`
-          }  ${s.stock} (${formatDate(s.CreatedDate)})`,
+          label: ` ${s.productCode === "0" || !s.productCode
+            ? ""
+            : `Code ${s.productCode}`
+            }  ${s.stock} (${formatDate(s.CreatedDate)})`,
           value: s._id,
           ...s,
         }));
@@ -1112,11 +1109,11 @@ const NewSale = () => {
       Sale: {
         ...(selectedCustomer
           ? {
-              contactID: selectedCustomer.value,
-              ...(invoiceDue > 0 ? { dueAmount: invoiceDue } : {}),
-              PreviousBalance: selectedCustomer.balance || 0,
-              CurrentBalance: -dueAmount,
-            }
+            contactID: selectedCustomer.value,
+            ...(invoiceDue > 0 ? { dueAmount: invoiceDue } : {}),
+            PreviousBalance: selectedCustomer.balance || 0,
+            CurrentBalance: -dueAmount,
+          }
           : { BillTo: "No Customer" }),
 
         paid: !selectedCustomer ? grandTotal : paidAmount,
@@ -1267,16 +1264,14 @@ const NewSale = () => {
                     onClick={() =>
                       setViewTotalPurchasePrice(!viewTotalPurchasePrice)
                     }
-                    className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors duration-300 ${
-                      viewTotalPurchasePrice ? "bg-green-500" : "bg-gray-300"
-                    }`}
+                    className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors duration-300 ${viewTotalPurchasePrice ? "bg-green-500" : "bg-gray-300"
+                      }`}
                   >
                     <span
-                      className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-300 ${
-                        viewTotalPurchasePrice
-                          ? "translate-x-4"
-                          : "translate-x-1"
-                      }`}
+                      className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-300 ${viewTotalPurchasePrice
+                        ? "translate-x-4"
+                        : "translate-x-1"
+                        }`}
                     />
                   </button>
                 </div>
@@ -1289,14 +1284,12 @@ const NewSale = () => {
                 <button
                   type="button"
                   onClick={() => setSendSMS(!sendSMS)}
-                  className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors duration-300 ${
-                    sendSMS ? "bg-green-500" : "bg-gray-300"
-                  }`}
+                  className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors duration-300 ${sendSMS ? "bg-green-500" : "bg-gray-300"
+                    }`}
                 >
                   <span
-                    className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-300 ${
-                      sendSMS ? "translate-x-4" : "translate-x-1"
-                    }`}
+                    className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-300 ${sendSMS ? "translate-x-4" : "translate-x-1"
+                      }`}
                   />
                 </button>
               </div>
@@ -1497,13 +1490,13 @@ const NewSale = () => {
                             ...base,
                             backgroundColor: state.isFocused
                               ? document.documentElement.classList.contains(
-                                  "dark",
-                                )
+                                "dark",
+                              )
                                 ? "#4b5563"
                                 : "#f3f4f6"
                               : document.documentElement.classList.contains(
-                                    "dark",
-                                  )
+                                "dark",
+                              )
                                 ? "#374151"
                                 : "#ffffff",
                             color: document.documentElement.classList.contains(
@@ -1620,13 +1613,13 @@ const NewSale = () => {
                                 ...base,
                                 backgroundColor: state.isFocused
                                   ? document.documentElement.classList.contains(
-                                      "dark",
-                                    )
+                                    "dark",
+                                  )
                                     ? "#4b5563"
                                     : "#f3f4f6"
                                   : document.documentElement.classList.contains(
-                                        "dark",
-                                      )
+                                    "dark",
+                                  )
                                     ? "#374151"
                                     : "#ffffff",
                                 color:
@@ -1748,9 +1741,8 @@ const NewSale = () => {
                             }
                             handleProductChange(idx, "qtySold", val); // শুধুমাত্র সংখ্যা allow
                           }}
-                          className={`global_input w-15 px-1 text-center rounded-none ${
-                            p.serials?.length > 0 ? "cursor-not-allowed" : ""
-                          }`}
+                          className={`global_input w-15 px-1 text-center rounded-none ${p.serials?.length > 0 ? "cursor-not-allowed" : ""
+                            }`}
                         />
                         <button
                           onClick={async () => {
@@ -1778,9 +1770,8 @@ const NewSale = () => {
                             }
                             handleProductChange(idx, "qtySold", val); // শুধুমাত্র সংখ্যা allow
                           }}
-                          className={`global_input w-24 text-center ${
-                            p.serials?.length > 0 ? "cursor-not-allowed" : ""
-                          }`}
+                          className={`global_input w-24 text-center ${p.serials?.length > 0 ? "cursor-not-allowed" : ""
+                            }`}
                         />
                       </div>
                     )}
@@ -1808,9 +1799,8 @@ const NewSale = () => {
                             }
                             handleProductChange(idx, "qtySold", val); // শুধুমাত্র সংখ্যা allow
                           }}
-                          className={`global_input w-15 px-1 text-center rounded-none ${
-                            p.serials?.length > 0 ? "cursor-not-allowed" : ""
-                          }`}
+                          className={`global_input w-15 px-1 text-center rounded-none ${p.serials?.length > 0 ? "cursor-not-allowed" : ""
+                            }`}
                         />
                         <button
                           onClick={() => {
@@ -1832,11 +1822,10 @@ const NewSale = () => {
                       onChange={(e) =>
                         handleProductChange(idx, "price", e.target.value)
                       }
-                      className={`global_input w-24 ${
-                        p.price < 1
-                          ? "ring-red-500 border-2 border-red-500"
-                          : ""
-                      }`}
+                      className={`global_input w-24 ${p.price < 1
+                        ? "ring-red-500 border-2 border-red-500"
+                        : ""
+                        }`}
                     />
                   </td>
                   {/* DP*/}
@@ -1980,11 +1969,10 @@ const NewSale = () => {
                   const value = e.target.value;
                   setCost(value === "" ? "" : parseInt(value, 10));
                 }}
-                className={`global_input w-40 rounded-sm text-right ${
-                  otherCostName === ""
-                    ? "bg-gray-200 dark:bg-gray-600 cursor-not-allowed"
-                    : ""
-                }`}
+                className={`global_input w-40 rounded-sm text-right ${otherCostName === ""
+                  ? "bg-gray-200 dark:bg-gray-600 cursor-not-allowed"
+                  : ""
+                  }`}
               />
             </div>
 
@@ -2053,11 +2041,10 @@ const NewSale = () => {
                         handleAccountAmountChange(account.value, e.target.value)
                       }
                       placeholder="Recieve Amount"
-                      className={` w-40 rounded-sm outline-0 p-1.5 text-right ${
-                        account.amount > 0
-                          ? "border-2 border-green-500"
-                          : " border-red-500 border"
-                      }`}
+                      className={` w-40 rounded-sm outline-0 p-1.5 text-right ${account.amount > 0
+                        ? "border-2 border-green-500"
+                        : " border-red-500 border"
+                        }`}
                     />
                   </div>
                 );
@@ -2077,7 +2064,7 @@ const NewSale = () => {
                   classNamePrefix="react-select"
                   // onInputChange={(val) => setSearchSupplierKeyword(val)}
                   styles={getReactSelectStyles()}
-                  // isClearable
+                // isClearable
                 />
               </div>
             )}
@@ -2146,7 +2133,7 @@ const NewSale = () => {
             onClick={handleSubmit}
             className="global_button w-full lg:w-fit"
           >
-            {}
+            { }
             {btn("create")}
           </button>
         </div>

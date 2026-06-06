@@ -37,7 +37,7 @@ export default function RecievedWarranty() {
       if (res.data.status === "Success") {
         const formatted = res.data.data.map((b) => ({
           value: b._id,
-          label: b.name,
+          label: `${b.name} (${b.balance})`,
           amount: 0,
           ...b,
         }));
@@ -394,7 +394,7 @@ export default function RecievedWarranty() {
                     // onKeyDown={(e) =>
                     //   ["e", "E", "+", "-"].includes(e.key) && e.preventDefault()
                     // }
-                     className={`  rounded-4xl outline-0 w-32 p-1 text-right ${account.amount > 0 ? "border-2 border-green-500" : " border-red-500 border"}`}
+                    className={`  rounded-4xl outline-0 w-32 p-1 text-right ${account.amount > 0 ? "border-2 border-green-500" : " border-red-500 border"}`}
                     placeholder="Amount"
                   />
                 </div>

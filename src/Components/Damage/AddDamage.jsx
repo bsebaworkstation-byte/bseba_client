@@ -1,115 +1,145 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
 import { BsTrash } from "react-icons/bs";
-import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
+import { FaCalendarAlt } from "react-icons/fa";
 import "react-datepicker/dist/react-datepicker.css";
+import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
+import loadingStore from "../../Zustand/LoadingStore";
 import api from "../../Helper/axios_resonse_interceptor";
+import { getReactSelectStyles } from "../../Helper/reactSelectStyles";
+import { formatCurrency } from "../../Helper/formatCurrency";
+import { useTextTranslate } from "../../TranslationText/useTextTranslate";
+import { GlobalFormTranslator } from "../../TranslationText/GlobalFormTranslator";
+import { HeadingTranslate } from "../../TranslationText/GlobalHeadingTranslator";
+import { GlobalTableTranslator } from "../../TranslationText/GlobalTableTranslator";
 
 const AddDamage = () => {
+  const { setGlobalLoader } = loadingStore();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [productOptions, setProductOptions] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [saleProducts, setSaleProducts] = useState([]);
+  const [damageProducts, setDamageProducts] = useState([]);
   const [note, setNote] = useState("");
   const [total, setTotal] = useState(0);
 
-  // Fetch all products
+  const formTrans = useTextTranslate(GlobalFormTranslator);
+  const heading = useTextTranslate(HeadingTranslate);
+  const table = useTextTranslate(GlobalTableTranslator);
+
+  const updateTotal = (list) => {
+    setTotal(list.reduce((sum, item) => sum + Number(item.total || 0), 0));
+  };
+
   useEffect(() => {
     const fetchProducts = async () => {
+      setGlobalLoader(true);
       try {
-        const res = await api.get(`/AllProductList/0`);
-        const options = res.data.data.map((item) => {
-          const totalQty = item.Productlines.reduce(
+        const res = await api.get("/AllProductList/0");
+        const options = (res.data.data || []).map((item) => {
+          const totalQty = (item.Productlines || []).reduce(
             (sum, line) => sum + (line.stock || 0),
-            0
+            0,
           );
+
           return {
             value: item._id,
-            label: `${item.name} - ${item.barcode} (Stock: ${totalQty}) ${item.brandName}`,
-            Productlines: item.Productlines,
+            label: `${item.name} - ${item.barcode} (Stock: ${totalQty}) ${item.brandName || ""}`,
+            productName: item.name,
+            Productlines: item.Productlines || [],
           };
         });
         setProductOptions(options);
       } catch (error) {
         ErrorToast("Failed to load products");
+      } finally {
+        setGlobalLoader(false);
       }
     };
+
     fetchProducts();
   }, []);
 
-  // When user selects a product
   const handleProductChange = (selectedOption) => {
-    setSelectedProduct(selectedOption);
+    if (!selectedOption) return;
+
+    if (damageProducts.some((item) => item.productID === selectedOption.value)) {
+      ErrorToast("Product already added");
+      setSelectedProduct(null);
+      return;
+    }
 
     const lines = selectedOption.Productlines.map((line) => ({
       value: line._id,
-      label: `(Stock: ${line.stock}) ${new Date(
-        line.CreatedDate
-      ).toLocaleDateString()}`,
+      label: `(Stock: ${line.stock}) ${new Date(line.CreatedDate).toLocaleDateString()}`,
       stock: line.stock,
-      mrp: line.mrp,
-      dp: line.dp,
       unitCost: line.unitCost,
     }));
 
+    const defaultLine = lines[0];
+
     const newItem = {
       productID: selectedOption.value,
-      name: selectedOption.label,
+      name: selectedOption.productName,
       qtyDamage: 0,
-      price: selectedOption.Productlines[0]?.unitCost || 0,
+      price: defaultLine?.unitCost || 0,
       total: 0,
-      productLineID: selectedOption.Productlines[0]?._id || null,
+      productLineID: defaultLine?.value || null,
       productLineOptions: lines,
     };
 
-    setSaleProducts((prev) => [...prev, newItem]);
+    const updated = [...damageProducts, newItem];
+    setDamageProducts(updated);
+    updateTotal(updated);
+    setSelectedProduct(null);
   };
 
-  // When user selects product line (In Date)
   const handleProductLineChange = (index, selectedLine) => {
-    const updated = [...saleProducts];
+    const updated = [...damageProducts];
     updated[index].productLineID = selectedLine.value;
     updated[index].price = selectedLine.unitCost || 0;
-    updated[index].stock = selectedLine.stock || 0;
     updated[index].total = updated[index].qtyDamage * updated[index].price;
-    setSaleProducts(updated);
+    setDamageProducts(updated);
     updateTotal(updated);
   };
 
-  // When user changes quantity
   const handleQtyChange = (index, qty) => {
-    const updated = [...saleProducts];
+    const updated = [...damageProducts];
     const line = updated[index].productLineOptions.find(
-      (opt) => opt.value === updated[index].productLineID
+      (opt) => opt.value === updated[index].productLineID,
     );
 
     const available = line?.stock || 0;
-    if (qty > available) {
-      toast.error(`Stock available: ${available}`);
-      qty = available;
+    let nextQty = Number(qty) || 0;
+
+    if (nextQty > available) {
+      ErrorToast(`Stock available: ${available}`);
+      nextQty = available;
     }
 
-    updated[index].qtyDamage = qty;
-    updated[index].total = qty * updated[index].price;
-    setSaleProducts(updated);
+    updated[index].qtyDamage = nextQty;
+    updated[index].total = nextQty * updated[index].price;
+    setDamageProducts(updated);
     updateTotal(updated);
   };
 
   const removeItem = (index) => {
-    const updated = saleProducts.filter((_, i) => i !== index);
-    setSaleProducts(updated);
+    const updated = damageProducts.filter((_, i) => i !== index);
+    setDamageProducts(updated);
     updateTotal(updated);
   };
 
-  const updateTotal = (list) => {
-    const totalValue = list.reduce((sum, item) => sum + item.total, 0);
-    setTotal(totalValue);
-  };
-
   const handleSubmit = async () => {
-    if (saleProducts.length === 0) {
+    if (damageProducts.length === 0) {
       return ErrorToast("Please add at least one product");
+    }
+
+    const invalidItem = damageProducts.find(
+      (item) => !item.productLineID || item.qtyDamage <= 0,
+    );
+
+    if (invalidItem) {
+      return ErrorToast("Please set quantity for all products");
     }
 
     const payload = {
@@ -117,7 +147,7 @@ const AddDamage = () => {
         total,
         note,
       },
-      DamageProduct: saleProducts.map((item) => ({
+      DamageProduct: damageProducts.map((item) => ({
         productID: item.productID,
         productLineID: item.productLineID,
         name: item.name,
@@ -127,147 +157,155 @@ const AddDamage = () => {
       })),
     };
 
+    setGlobalLoader(true);
     try {
-      const res = await api.post(`/AdDamage`, payload);
-      if (res.data.status === "success" || res.status === 200) {
-        SuccessToast("Damage added successfully");
-        setSaleProducts([]);
+      const res = await api.post("/AdDamage", payload);
+      if (
+        String(res.data?.status).toLowerCase() === "success" ||
+        res.status === 200
+      ) {
+        SuccessToast(res.data?.message || "Damage added successfully");
+        setDamageProducts([]);
         setNote("");
         setTotal(0);
         setSelectedProduct(null);
+        setSelectedDate(new Date());
       } else {
-        ErrorToast("Failed to add damage");
+        ErrorToast(res.data?.message || "Failed to add damage");
       }
     } catch (error) {
-      ErrorToast("Failed to add damage");
+      ErrorToast(
+        error.response?.data?.message || "Failed to add damage",
+      );
+    } finally {
+      setGlobalLoader(false);
     }
   };
 
-  const customStyles = {
-    control: (base) => ({
-      ...base,
-      fontSize: "14px",
-      minHeight: "31px",
-    }),
-    menu: (base) => ({
-      ...base,
-      zIndex: 9999,
-    }),
-  };
-
   return (
-    <div className="global-margin-main-content">
-      <div className="global-bg-glass global-content-gap-top global-content-gap-bottom">
-        <div className="form-wrapper">
-          <div className="row">
-            <div className="col-12 col-sm-6 mt-3">
-              <label className="form-label">Date</label>
-              <DatePicker
-                selected={selectedDate}
-                onChange={(date) => setSelectedDate(date)}
-                dateFormat="dd-MM-yyyy"
-                className="form-control form-control-sm"
-              />
-            </div>
-            <div className="col-12 col-sm-6 mt-3">
-              <label className="form-label">Note</label>
-              <input
-                type="text"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                className="form-control form-control-sm"
-                placeholder="Enter note"
-              />
-            </div>
+    <div className="global_container">
+      <h4 className="global_heading">{heading("addDamage")}</h4>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label className="block text-sm mb-1">{table("date")}</label>
+          <div className="relative">
+            <FaCalendarAlt className="absolute left-3 top-3" />
+            <DatePicker
+              selected={selectedDate}
+              onChange={(date) => setSelectedDate(date)}
+              dateFormat="dd-MM-yyyy"
+              className="global_input pl-10 w-full"
+            />
           </div>
         </div>
+        <div>
+          <label className="block text-sm mb-1">{formTrans("note")}</label>
+          <input
+            type="text"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            className="global_input w-full"
+            placeholder="Enter note"
+          />
+        </div>
+      </div>
 
-        {/* Table */}
-        <div className="table-wrapper mt-4">
-          <table className="table table-sm table-bordered">
-            <thead className="table-dark">
-              <tr>
-                <th>#</th>
-                <th>Product</th>
-                <th>In Date</th>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Total</th>
-                <th>Remove</th>
+      <div className="global_sub_container overflow-auto rounded-lg mb-6">
+        <table className="global_table w-full">
+          <thead className="global_thead">
+            <tr className="global_tr">
+              <th className="global_th">#</th>
+              <th className="global_th">{formTrans("product")}</th>
+              <th className="global_th">In Date</th>
+              <th className="global_th">{table("qty")}</th>
+              <th className="global_th">{formTrans("price")}</th>
+              <th className="global_th">{table("total")}</th>
+              <th className="global_th">{table("Action")}</th>
+            </tr>
+          </thead>
+          <tbody className="global_tbody">
+            {damageProducts.length === 0 ? (
+              <tr className="global_tr">
+                <td colSpan={7} className="text-center py-4 text-gray-500">
+                  No products added
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {saleProducts.map((item, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{item.name}</td>
-                  <td>
+            ) : (
+              damageProducts.map((item, index) => (
+                <tr className="global_tr" key={`${item.productID}-${index}`}>
+                  <td className="global_td">{index + 1}</td>
+                  <td className="global_td">{item.name}</td>
+                  <td className="global_td min-w-[180px]">
                     <Select
                       options={item.productLineOptions}
                       value={item.productLineOptions.find(
-                        (opt) => opt.value === item.productLineID
+                        (opt) => opt.value === item.productLineID,
                       )}
                       onChange={(selected) =>
                         handleProductLineChange(index, selected)
                       }
-                      styles={customStyles}
+                      styles={getReactSelectStyles()}
+                      menuPortalTarget={document.body}
                     />
                   </td>
-                  <td>
+                  <td className="global_td">
                     <input
                       type="number"
                       min="0"
-                      className="form-control form-control-sm"
+                      className="global_input w-24"
                       value={item.qtyDamage}
                       onChange={(e) =>
                         handleQtyChange(index, parseFloat(e.target.value) || 0)
                       }
                     />
                   </td>
-                  <td>{item.price}</td>
-                  <td>{item.total.toFixed(2)}</td>
-                  <td>
+                  <td className="global_td">{formatCurrency(item.price)}</td>
+                  <td className="global_td">
+                    {formatCurrency(item.total)}
+                  </td>
+                  <td className="global_td">
                     <button
-                      className="btn btn-sm btn-danger"
+                      type="button"
+                      className="global_button_red"
                       onClick={() => removeItem(index)}
                     >
                       <BsTrash />
                     </button>
                   </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
 
-        {/* Bottom Section */}
-        <div className="row mt-3">
-          <div className="col-lg-8 col-12">
-            <label className="form-label">Select Product</label>
-            <Select
-              options={productOptions}
-              value={selectedProduct}
-              onChange={handleProductChange}
-              styles={customStyles}
-              placeholder="Select Product"
-            />
-          </div>
-          <div className="col-lg-4 col-12 mt-3 mt-lg-0">
-            <div className="d-flex align-items-center justify-content-between">
-              <label className="form-label">Total:</label>
-              <input
-                disabled
-                value={total.toFixed(2)}
-                className="form-control form-control-sm w-50"
-              />
-            </div>
-            <button
-              onClick={handleSubmit}
-              className="btn btn-sm w-100 btn-primary mt-3"
-            >
-              Add Damage
-            </button>
-          </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-end">
+        <div className="lg:col-span-2">
+          <label className="block text-sm mb-1">{formTrans("product")}</label>
+          <Select
+            options={productOptions}
+            value={selectedProduct}
+            onChange={handleProductChange}
+            styles={getReactSelectStyles()}
+            menuPortalTarget={document.body}
+            placeholder="Select product"
+          />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">{table("total")}</label>
+          <input
+            disabled
+            value={formatCurrency(total)}
+            className="global_input w-full mb-3"
+          />
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="global_button w-full"
+          >
+            {heading("addDamage")}
+          </button>
         </div>
       </div>
     </div>

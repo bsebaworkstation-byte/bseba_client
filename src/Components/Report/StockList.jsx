@@ -12,6 +12,7 @@ export default function StockList() {
   const [showPurchasePrice, setShowPurchasePrice] = useState(true);
   const [showStockValue, setShowStockValue] = useState(true);
   const [showSalePrice, setShowSalePrice] = useState(true);
+  const [printWithDate, setPrintWithDate] = useState(false);
 
   const fetchStocks = async () => {
     setGlobalLoader(true);
@@ -37,7 +38,35 @@ export default function StockList() {
   return (
     <div className="lg:p-5 p-2" ref={printRef}>
       <div className="flex justify-between items-center">
-        <h4 className="global_heading">Stock List</h4>
+        <h4 className="global_heading">Stock List
+          {/* if checkbox true display current date of issued (text display when print only) */}
+          {printWithDate && (
+            <span
+              className="hidden print:inline ml-2 text-[14px] text-gray-500"
+              id="print"
+            >
+              {/* date should be human readable */}
+              {new Date().toLocaleDateString("en-IN", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })}
+            </span>
+          )}
+          {/* print with date as checkbox */}
+          <input
+            type="checkbox"
+            name="printWithDate"
+            className="ml-20"
+            id="no-print"
+            checked={printWithDate}
+            onChange={() => setPrintWithDate(!printWithDate)}
+          />
+          <label htmlFor="printWithDate" className="ml-1 text-[14px]" id="no-print">
+            Print with Date
+          </label>
+
+        </h4>
         <button
           onClick={handlePrint}
           className="global_button my-5"
@@ -54,10 +83,10 @@ export default function StockList() {
           checked={showPurchasePrice}
           onChange={() => setShowPurchasePrice(!showPurchasePrice)}
           className="
-    w-4 h-4 
-    accent-green-600 
-    cursor-pointer
-  "
+          w-4 h-4 
+          accent-green-600 
+          cursor-pointer
+        "
         />
         <label htmlFor="stockValue">Stock Value</label>
         <input
@@ -66,10 +95,10 @@ export default function StockList() {
           checked={showStockValue}
           onChange={() => setShowStockValue(!showStockValue)}
           className="
-    w-4 h-4 
-    accent-green-600 
-    cursor-pointer
-  "
+          w-4 h-4 
+          accent-green-600 
+          cursor-pointer
+        "
         />
         <label htmlFor="salePrice">Sale Price</label>
         <input
@@ -78,10 +107,10 @@ export default function StockList() {
           checked={showSalePrice}
           onChange={() => setShowSalePrice(!showSalePrice)}
           className="
-    w-4 h-4 
-    accent-green-600 
-    cursor-pointer
-  "
+          w-4 h-4 
+          accent-green-600 
+          cursor-pointer
+        "
         />
       </div>
       <div className="w-full overflow-auto">

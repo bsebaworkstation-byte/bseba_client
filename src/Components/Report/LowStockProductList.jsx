@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import loadingStore from "../../Zustand/LoadingStore";
 import api from "../../Helper/axios_resonse_interceptor";
 import { useTextTranslate } from "../../TranslationText/useTextTranslate";
 import { GlobalTableTranslator } from "../../TranslationText/GlobalTableTranslator";
 import { HeadingTranslate } from "../../TranslationText/GlobalHeadingTranslator";
+import { printElement } from "../../Helper/Printer";
+import { FaPrint } from "react-icons/fa";
 
 const LowStockProductList = () => {
   const [lowProductList, setLowProductList] = useState([]);
@@ -17,6 +19,7 @@ const LowStockProductList = () => {
   const [loading, setLoading] = useState(false);
   const { setGlobalLoader } = loadingStore();
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const printRef = useRef(null);
 
   // Fetch Data
   const fetchData = async () => {
@@ -125,12 +128,29 @@ const LowStockProductList = () => {
     });
   };
 
+  const handlePrint = () => {
+    printElement(printRef, "Stock Report");
+  };
   return (
     <div className="container global_container mx-auto">
       <div className="global_sub_container">
         {/* Title */}
         <div className="">
-          <h5 className="text-xl font-semibold mb-3">{table("lowStockHeading")}</h5>
+
+          <div className="flex justify-between items-center mb-5">
+            <h5 className="text-xl font-semibold mb-3">{table("lowStockHeading")}</h5>
+            <div className="flex flex-wrap justify-between items-center gap-3">
+
+              <button
+                type="button"
+                onClick={handlePrint}
+                className="global_button_red flex items-center gap-2 shrink-0 print:hidden"
+              >
+                <FaPrint /> Print
+              </button>
+            </div>
+          </div>
+
         </div>
         {/* Per Page Selector */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
@@ -167,7 +187,7 @@ const LowStockProductList = () => {
         </div>
 
         {/* Table */}
-        <div className="mt-5 overflow-x-auto">
+        <div ref={printRef} className="mt-5 overflow-x-auto">
           <table className="global_table">
             <thead className="global_thead">
               <tr className="">
@@ -195,7 +215,7 @@ const LowStockProductList = () => {
                   className="global_th"
                   onClick={() => handleSort("unitCost")}
                 >
-                 {t("unitCost")} {renderSortIcon("unitCost")}
+                  {t("unitCost")} {renderSortIcon("unitCost")}
                 </th>
                 <th className="global_th" onClick={() => handleSort("mrp")}>
                   {t("mrp")} {renderSortIcon("mrp")}
@@ -218,11 +238,10 @@ const LowStockProductList = () => {
             <button
               onClick={() => setPage((p) => Math.max(p - 1, 1))}
               disabled={page === 1}
-              className={`px-4 py-2 rounded-r-md rounded-l-full ${
-                page === 1
-                  ? "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
-                  : "global_button"
-              }`}
+              className={`px-4 py-2 rounded-r-md rounded-l-full ${page === 1
+                ? "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
+                : "global_button"
+                }`}
             >
               {t("previous")}
             </button>
@@ -234,11 +253,10 @@ const LowStockProductList = () => {
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= Math.ceil(total / perPage)}
-              className={`px-4 py-2 rounded-l-md rounded-r-full ${
-                page >= Math.ceil(total / perPage)
-                  ? "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
-                  : "global_button"
-              }`}
+              className={`px-4 py-2 rounded-l-md rounded-r-full ${page >= Math.ceil(total / perPage)
+                ? "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
+                : "global_button"
+                }`}
             >
               {t("next")}
             </button>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { getToken } from "../../Helper/SessionHelper";
 import DatePicker from "react-datepicker";
@@ -25,6 +25,8 @@ import { Link, useNavigate } from "react-router-dom";
 import loadingStore from "../../Zustand/LoadingStore";
 import { getReactSelectStyles } from "../../Helper/reactSelectStyles";
 import api from "../../Helper/axios_resonse_interceptor";
+import { printElement } from "../../Helper/Printer";
+import { FaPrint } from "react-icons/fa";
 
 const periodOptions = [
   { value: "", label: "Select Period" },
@@ -49,6 +51,7 @@ const SalesReport = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { setGlobalLoader } = loadingStore();
   const navigate = useNavigate();
+  const printRef = useRef(null);
 
   // Fetch data from API
   const fetchData = async (start, end) => {
@@ -116,6 +119,10 @@ const SalesReport = () => {
     fetchData(newStartDate, newEndDate);
   };
 
+  const handlePrint = () => {
+    printElement(printRef, "Stock Report");
+  };
+
   // Filter by search
   const filteredData = dataList.filter(
     (sale) =>
@@ -127,8 +134,8 @@ const SalesReport = () => {
     <div className="global_container">
       <ToastContainer position="top-right" autoClose={3000} />
 
-      <div className="global_sub_container">
-        
+      <div className="global_sub_container" id={"no-print"} >
+
         {/* Filters */}
         <div className="grid md:grid-cols-4 grid-cols-2 gap-5">
           {/* Period Select */}
@@ -193,8 +200,20 @@ const SalesReport = () => {
       </div>
 
       {/* Data Section */}
-      <div className="global_sub_container mt-5">
-        <h1 className="global_heading">Sales Report Data</h1>
+      <div ref={printRef} className="global_sub_container mt-5">
+        <div className="flex justify-between items-center mb-5">
+          <h1 className="global_heading">Sales Report Data</h1>
+          <div className="flex flex-wrap justify-between items-center gap-3">
+
+            <button
+              type="button"
+              onClick={handlePrint}
+              className="global_button_red flex items-center gap-2 shrink-0 print:hidden"
+            >
+              <FaPrint /> Print
+            </button>
+          </div>
+        </div>
 
         <div className="overflow-x-auto">
           <table className="global_table">

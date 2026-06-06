@@ -120,6 +120,14 @@ export const HeadingTranslate = {
     en: "Expense List",
     bn: "খরচের তালিকা",
   },
+  damageList: {
+    en: "Damage List",
+    bn: "ক্ষতির তালিকা",
+  },
+  addDamage: {
+    en: "Add Damage",
+    bn: "ক্ষতি যোগ করুন",
+  },
  categoryWiseTotal: {
   en: "Category Wise Total",
   bn: "শ্রেণি অনুযায়ী মোট",

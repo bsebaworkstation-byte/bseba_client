@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import loadingStore from "../../Zustand/LoadingStore";
 import api from "../../Helper/axios_resonse_interceptor";
 import { useTextTranslate } from "../../TranslationText/useTextTranslate";
 import { GlobalTableTranslator } from "../../TranslationText/GlobalTableTranslator";
 import { HeadingTranslate } from "../../TranslationText/GlobalHeadingTranslator";
+import { printElement } from "../../Helper/Printer";
+import { FaPrint } from "react-icons/fa";
 
 
 const AlertProductList = () => {
@@ -12,6 +14,7 @@ const AlertProductList = () => {
   const [searchKeyword, setSearchKeyword] = useState("0");
   const [perPage, setPerPage] = useState(20);
   const [page, setPage] = useState(1);
+  const printRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const { setGlobalLoader } = loadingStore();
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -121,9 +124,8 @@ const AlertProductList = () => {
           <td className="global_td">{item.mrp}</td>
           <td className="global_td">{item.barcode || "-"}</td>
           <td
-            className={`global_td ${
-              item.qty <= 0 ? "text-red-600 font-bold" : ""
-            }`}
+            className={`global_td ${item.qty <= 0 ? "text-red-600 font-bold" : ""
+              }`}
           >
             {item.qty}
           </td>
@@ -133,6 +135,10 @@ const AlertProductList = () => {
     });
   };
 
+  const handlePrint = () => {
+    printElement(printRef, "Stock Report");
+  };
+
   const totalPages = Math.ceil(total / perPage);
 
   return (
@@ -140,7 +146,14 @@ const AlertProductList = () => {
       <div className="global_sub_container">
         {/* Title */}
         <div className="">
-          <h5 className="text-xl font-semibold mb-3">{heading("alertHeading")}</h5>
+
+
+
+          <div className="flex justify-between items-center mb-5">
+            <h5 className="text-xl font-semibold mb-3">{heading("alertHeading")}</h5>
+
+          </div>
+
         </div>
 
         {/* Search and Per Page */}
@@ -175,7 +188,16 @@ const AlertProductList = () => {
         </div>
 
         {/* Table */}
-        <div className="mt-5 overflow-x-auto">
+        <div ref={printRef} className="mt-5 overflow-x-auto">
+          <div className="mb-5">
+            <button
+              type="button"
+              onClick={handlePrint}
+              className="global_button_red flex items-center gap-2 shrink-0 print:hidden"
+            >
+              <FaPrint /> Print
+            </button>
+          </div>
           <table className="global_table">
             <thead className="global_thead">
               <tr className="">
@@ -229,9 +251,8 @@ const AlertProductList = () => {
           <button
             onClick={() => setPage((p) => Math.max(p - 1, 1))}
             disabled={page === 1}
-            className={`px-4 py-2 rounded-r-md rounded-l-full dark:text-gray-800 ${
-              page === 1 ? "bg-gray-200 cursor-not-allowed" : "global_button"
-            }`}
+            className={`px-4 py-2 rounded-r-md rounded-l-full dark:text-gray-800 ${page === 1 ? "bg-gray-200 cursor-not-allowed" : "global_button"
+              }`}
           >
             {t("previous")}
           </button>
@@ -245,11 +266,10 @@ const AlertProductList = () => {
               setPage((p) => (p < totalPages ? p + 1 : totalPages))
             }
             disabled={page >= totalPages}
-            className={`px-4 py-2 rounded-l-md rounded-r-full dark:text-gray-800 ${
-              page >= totalPages
-                ? "bg-gray-200 cursor-not-allowed"
-                : "global_button"
-            }`}
+            className={`px-4 py-2 rounded-l-md rounded-r-full dark:text-gray-800 ${page >= totalPages
+              ? "bg-gray-200 cursor-not-allowed"
+              : "global_button"
+              }`}
           >
             {t("next")}
           </button>

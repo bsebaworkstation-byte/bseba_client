@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ErrorToast } from "../../Helper/FormHelper";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -20,6 +20,8 @@ import { createPortal } from "react-dom";
 import loadingStore from "../../Zustand/LoadingStore";
 import { getReactSelectStyles } from "../../Helper/reactSelectStyles";
 import api from "../../Helper/axios_resonse_interceptor";
+import { printElement } from "../../Helper/Printer";
+import { FaPrint } from "react-icons/fa";
 
 const ExpenseReport = () => {
   const { setGlobalLoader } = loadingStore();
@@ -28,7 +30,10 @@ const ExpenseReport = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("");
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
-
+  const printRef = useRef(null);
+  const handlePrint = () => {
+    printElement(printRef, "Stock Report");
+  };
   // Fetch Expense Types
   const fetchExpenseTypes = async () => {
     setGlobalLoader(true);
@@ -42,6 +47,9 @@ const ExpenseReport = () => {
       setGlobalLoader(false);
     }
   };
+
+
+
 
   // Fetch Expenses by Date Range
   const fetchExpenses = async (start, end) => {
@@ -177,7 +185,7 @@ const ExpenseReport = () => {
       </div>
       <div className="global_sub_container">
         {/* Expenses Table */}
-        <div className="overflow-x-auto">
+        <div ref={printRef} className="overflow-x-auto">
           <table className="global_table">
             <thead className="global_thead">
               <tr>
@@ -185,7 +193,7 @@ const ExpenseReport = () => {
                 <th className="global_th">Amount</th>
                 <th className="global_th">Note</th>
                 <th className="global_th">Date</th>
-                 <th className="global_th">Action</th>
+                <th className="global_th">Action</th>
               </tr>
             </thead>
             <tbody className="global_tbody">
@@ -275,28 +283,16 @@ const ExpenseReport = () => {
           </table>
         </div>
 
-        {/* <div className="mt-4 overflow-x-auto">
-          <h1 className="global_heading">Total Amount by Expense Type</h1>
-          <table className="global_table">
-            <thead className="global_thead">
-              <tr>
-                <th className="global_th">Expense Type</th>
-                <th className="global_th">Total Amount</th>
-              </tr>
-            </thead>
-            <tbody className="global_tbody">
-              {Object.entries(totalAmountByType).map(([type, amount]) => (
-                <tr key={type}>
-                  {console.log("exp type", totalAmountByType)}
-                  <td className="global_td">{type}</td>
-                  <td className="global_td">
-                    {new Intl.NumberFormat("en-IN").format(amount.toFixed(2))}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div> */}
+        {/* print button */}
+        <div className="flex justify-center mt-5">
+          <button
+            type="button"
+            onClick={handlePrint}
+            className="global_button_red flex items-center gap-2 shrink-0 print:hidden"
+          >
+            <FaPrint /> Print
+          </button>
+        </div>
       </div>
     </div>
   );

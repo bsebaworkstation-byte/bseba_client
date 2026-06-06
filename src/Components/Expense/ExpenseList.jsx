@@ -17,6 +17,7 @@ import { Link } from "react-router-dom";
 import { dateRangeOptions } from "../../TranslationText/TranslateTextDateRange";
 import { translateDatePickerText } from "../../TranslationText/TranslateTextDateRange";
 import { SuccessToast, ErrorToast } from "../../Helper/FormHelper";
+import Swal from "sweetalert2";
 export default function ExpenseList() {
   const { setGlobalLoader } = loadingStore();
   const { refresh } = expenseStore();
@@ -94,22 +95,48 @@ export default function ExpenseList() {
   const handlePrint = () => {
     printExpense(printRef, "Expense list");
   };
-  const deleteExpense = async (id) => {
-    try {
-      setGlobalLoader(true);
-      const res = await api.get(`/DeleteExpense/${id}`);
 
-      if (res.data.status === "Success") {
-        SuccessToast("Expense deleted successfully");
-        await fetchExpenseByDate();
-      } else {
-        ErrorToast(res.data.message || "Failed to delete expense");
+  const deleteExpense = (id) => {
+    Swal.fire({
+      title: '<span class="text-gray-900 dark:text-white">Are you sure?</span>',
+      html: '<p class="text-gray-600 dark:text-gray-300">This action cannot be undone!</p>',
+      icon: "warning",
+      showCancelButton: true,
+      background: "rgba(255, 255, 255, 0.2)",
+      backdrop: `rgba(0,0,0,0.4)`,
+      customClass: {
+        popup:
+          "rounded-lg border border-white/20 dark:border-gray-700/50 shadow-xl backdrop-blur-lg bg-white/80 dark:bg-gray-800/80",
+        confirmButton:
+          "px-4 py-2 bg-red-600/90 hover:bg-red-700/90 text-white rounded-md font-medium transition-colors backdrop-blur-sm ml-3",
+        cancelButton:
+          "px-4 py-2 bg-white/90 dark:bg-gray-700/90 hover:bg-gray-100/90 dark:hover:bg-gray-600/90 text-gray-800 dark:text-gray-200 border border-white/20 dark:border-gray-600/50 rounded-md font-medium transition-colors ml-2 backdrop-blur-sm",
+        title: "text-lg font-semibold",
+        htmlContainer: "mt-2",
+      },
+      buttonsStyling: false,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
+    }).then(async (result) => {
+      if (!result.isConfirmed) return;
+
+      try {
+        setGlobalLoader(true);
+        const res = await api.get(`/DeleteExpense/${id}`);
+
+        if (res.data.status === "Success") {
+          SuccessToast("Expense deleted successfully");
+          await fetchExpenseByDate();
+        } else {
+          ErrorToast(res.data.message || "Failed to delete expense");
+        }
+      } catch (error) {
+        ErrorToast(error.response?.data?.message || "Failed to delete expense");
+      } finally {
+        setGlobalLoader(false);
       }
-    } catch (error) {
-      ErrorToast(error.response?.data?.message || "Failed to delete expense");
-    } finally {
-      setGlobalLoader(false);
-    }
+    });
   };
   return (
     <div ref={printRef}>

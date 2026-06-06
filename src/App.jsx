@@ -34,6 +34,7 @@ import ExpenseByIDPage from "./Pages/Expense/ExpenseByIDPage";
 import ExpenseDetailsPage from "./Pages/Expense/ExpenseDetailsPage";
 import PurchaseReturnListPage from "./Pages/Purchase/PurchaseReturnListPage";
 import AddDamagePage from "./Pages/Damage/AddDamagePage";
+import DamageListPage from "./Pages/Damage/DamageList";
 import SalsReportPage from "./Pages/Report/SalsReportPage";
 import BusinessReportPage from "./Pages/Report/BusinessReportPage";
 import TopCustomerPage from "./Pages/Report/TopCustomerPage";
@@ -194,7 +195,6 @@ function App() {
             <Route path="/Expense" element={<ExpensePage />} />
             <Route path="/ExpenseType" element={<ExpenseTypePage />} />
             <Route path="/ExpenseByType" element={<ExpenseByIDPage />} />
-            <Route path="/AddDamage" element={<AddDamagePage />}></Route>
 
             {/* Report Routes  */}
             <Route path="/BusinessReport" element={<BusinessReportPage />} />
@@ -334,6 +334,9 @@ function App() {
               path="/PurchaseReturnDetails/:id"
               element={<PurchaseReturnDetailsPage />}
             />
+
+            <Route path="/AddDamage" element={<AddDamagePage />} />
+            <Route path="/DamageList" element={<DamageListPage />} />
 
             <Route path="/PosSale" element={<PosSalePage />} />
 

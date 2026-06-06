@@ -8,3 +8,11 @@ export const formatCurrency = (amount, decimals = 2) => {
     }).format(amount)
   );
 };
+
+export const formatCurrencyToBangla = (amount, decimals = 2) => {
+  if (!amount || isNaN(amount)) amount = 0;
+
+  return (
+    new Intl.NumberFormat("bn-BD").format(amount)
+  );
+};

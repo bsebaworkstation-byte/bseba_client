@@ -103,25 +103,6 @@ const MasterLayout = ({ children }) => {
 
   const btn = useTextTranslate(GlobalBtnTranslator);
 
-  // const fetchBusinessDetailsByBusinessID = async (id) => {
-  //   setGlobalLoader(true);
-  //   try {
-  //     const res = await api.get(`/getBusinessDetails/${id}`);
-  //     if (res.data.status === "Success") {
-  //       setToken(res.data.token);
-  //       setPermissionDetails(res.data.data.permissions);
-  //       setBusinessDetails(res.data.data.businessDetails);
-  //       window.location.href = "/Dashboard";
-  //     } else {
-  //       ErrorToast(res.data.error);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     ErrorToast(error.message);
-  //   } finally {
-  //     setGlobalLoader(false);
-  //   }
-  // };
 
   const userPermissions = useMemo(() => {
     return new Set(permissions?.map((p) => p.name));
@@ -141,365 +122,391 @@ const MasterLayout = ({ children }) => {
       // Contact
       ...(can("CustomersList") || can("SuppliersList") || can("CreateContact")
         ? [
-            {
-              id: "contact",
-              title: t("contact"),
-              icon: <RiContactsBook3Line />,
-              children: [
-                ...(can("CustomersList") || can("CreateContact")
-                  ? [
-                      {
-                        id: "customer",
-                        title: t("customer"),
-                        path: "/Customer",
-                        icon: <GrContactInfo />,
-                      },
-                    ]
-                  : []),
-                ...(can("SuppliersList") || can("CreateContact")
-                  ? [
-                      {
-                        id: "supplier",
-                        title: t("supplier"),
-                        icon: <TbPackageImport />,
-                        path: "/Supplier",
-                      },
-                    ]
-                  : []),
-              ],
-            },
-          ]
+          {
+            id: "contact",
+            title: t("contact"),
+            icon: <RiContactsBook3Line />,
+            children: [
+              ...(can("CustomersList") || can("CreateContact")
+                ? [
+                  {
+                    id: "customer",
+                    title: t("customer"),
+                    path: "/Customer",
+                    icon: <GrContactInfo />,
+                  },
+                ]
+                : []),
+              ...(can("SuppliersList") || can("CreateContact")
+                ? [
+                  {
+                    id: "supplier",
+                    title: t("supplier"),
+                    icon: <TbPackageImport />,
+                    path: "/Supplier",
+                  },
+                ]
+                : []),
+            ],
+          },
+        ]
         : []),
 
       // Product
       ...(can("CreateProduct") ||
-      can("CreateUnit") ||
-      can("CreateBrand") ||
-      can("CreateCategory")
+        can("CreateUnit") ||
+        can("CreateBrand") ||
+        can("CreateCategory")
         ? [
-            {
-              id: "product",
-              title: t("product"),
-              icon: <AiOutlineProduct />,
-              children: [
-                ...(can("CreateProduct")
-                  ? [
-                      {
-                        id: "New product",
-                        title: t("newProduct"),
-                        path: "/NewProduct",
-                        icon: <RiRedPacketLine />,
-                      },
-                    ]
-                  : []),
-                {
-                  id: "product list",
-                  title: t("productList"),
-                  path: "/ProductList",
-                  icon: <CiViewList />,
-                },
-                ...(can("CreateBrand")
-                  ? [
-                      {
-                        id: "brand",
-                        title: t("brand"),
-                        icon: <SiBrandfolder />,
-                        path: "/Brand",
-                      },
-                    ]
-                  : []),
-                ...(can("CreateCategory") || can("UpdateCategory")
-                  ? [
-                      {
-                        id: "category",
-                        title: t("category"),
-                        icon: <BiCategoryAlt />,
-                        path: "/Category",
-                      },
-                    ]
-                  : []),
-                ...(can("CreateUnit") || can("UpdateUnit")
-                  ? [
-                      {
-                        id: "unit",
-                        title: t("unit"),
-                        icon: <FaUnity />,
-                        path: "/Unit",
-                      },
-                    ]
-                  : []),
-              ],
-            },
-          ]
+          {
+            id: "product",
+            title: t("product"),
+            icon: <AiOutlineProduct />,
+            children: [
+              ...(can("CreateProduct")
+                ? [
+                  {
+                    id: "New product",
+                    title: t("newProduct"),
+                    path: "/NewProduct",
+                    icon: <RiRedPacketLine />,
+                  },
+                ]
+                : []),
+              {
+                id: "product list",
+                title: t("productList"),
+                path: "/ProductList",
+                icon: <CiViewList />,
+              },
+              ...(can("CreateBrand")
+                ? [
+                  {
+                    id: "brand",
+                    title: t("brand"),
+                    icon: <SiBrandfolder />,
+                    path: "/Brand",
+                  },
+                ]
+                : []),
+              ...(can("CreateCategory") || can("UpdateCategory")
+                ? [
+                  {
+                    id: "category",
+                    title: t("category"),
+                    icon: <BiCategoryAlt />,
+                    path: "/Category",
+                  },
+                ]
+                : []),
+              ...(can("CreateUnit") || can("UpdateUnit")
+                ? [
+                  {
+                    id: "unit",
+                    title: t("unit"),
+                    icon: <FaUnity />,
+                    path: "/Unit",
+                  },
+                ]
+                : []),
+            ],
+          },
+        ]
         : []),
       // Purchase
       ...(can("CreatePurchases") || can("ViewPurchases")
         ? [
-            {
-              id: "purchase",
-              title: t("purchase"),
-              icon: <GiBuyCard />,
-              children: [
-                ...(can("CreatePurchases")
-                  ? [
-                      {
-                        id: "createpurchase",
-                        title: t("createPurchase"),
-                        icon: <IoCreateOutline />,
-                        path: "/CreatePurchase",
-                      },
-                    ]
-                  : []),
-                ...(can("ViewPurchases")
-                  ? [
-                      {
-                        id: "purchaselist",
-                        title: t("purchaseList"),
-                        icon: <FaList />,
-                        path: "/PurchaseList",
-                      },
-                    ]
-                  : []),
-                ...(can("ViewPurchaseReturn")
-                  ? [
-                      {
-                        id: "purchasereturnlist",
-                        title: t("purchaseReturnList"),
-                        icon: <FaList />,
-                        path: "/PurchaseReturnList",
-                      },
-                    ]
-                  : []),
-              ],
-            },
-          ]
+          {
+            id: "purchase",
+            title: t("purchase"),
+            icon: <GiBuyCard />,
+            children: [
+              ...(can("CreatePurchases")
+                ? [
+                  {
+                    id: "createpurchase",
+                    title: t("createPurchase"),
+                    icon: <IoCreateOutline />,
+                    path: "/CreatePurchase",
+                  },
+                ]
+                : []),
+              ...(can("ViewPurchases")
+                ? [
+                  {
+                    id: "purchaselist",
+                    title: t("purchaseList"),
+                    icon: <FaList />,
+                    path: "/PurchaseList",
+                  },
+                ]
+                : []),
+              ...(can("ViewPurchaseReturn")
+                ? [
+                  {
+                    id: "purchasereturnlist",
+                    title: t("purchaseReturnList"),
+                    icon: <FaList />,
+                    path: "/PurchaseReturnList",
+                  },
+                ]
+                : []),
+            ],
+          },
+        ]
         : []),
       //Sale
       ...(can("CreateSales") || can("ViewSales") || can("ViewReturn")
         ? [
-            {
-              id: "sale",
-              title: t("sale"),
-              icon: <FcSalesPerformance />,
-              children: [
-                ...(can("CreateSales")
-                  ? [
-                      {
-                        id: "createsale",
-                        title: t("createSale"),
-                        icon: <MdCreateNewFolder />,
-                        path: "/NewSale",
-                      },
-
-                      {
-                        id: "SaleWithVat",
-                        title: (
-                          <div className="flex items-center gap-2">
-                            {t("Sale With Vat")}
-                            <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold animate-pulse">
-                              NEW
-                            </span>
-                          </div>
-                        ),
-                        icon: <CiMoneyCheck1 />,
-                        path: "/SaleWithVat",
-                      },
-                      ...(businessDetails.warranty !== "1"
-                        ? [
-                            {
-                              id: "possale",
-                              title: t("posSale"),
-                              icon: <MdCreateNewFolder />,
-                              path: "/PosSale",
-                            },
-                          ]
-                        : []),
-                    ]
-                  : []),
-
-                ...(can("ViewSales")
-                  ? [
-                      {
-                        id: "salelist",
-                        title: t("saleList"),
-                        icon: <PiListStarFill />,
-                        path: "/SaleList",
-                      },
-                    ]
-                  : []),
-                ...(can("ViewReturn")
-                  ? [
-                      {
-                        id: "salereturnlist",
-                        title: t("saleReturnList"),
-                        icon: <IoListCircleOutline />,
-                        path: "/SaleReturnList",
-                      },
-                    ]
-                  : []),
-              ],
-            },
-          ]
-        : []),
-      //Warranty & quotation
-      ...(businessDetails.warranty === "1"
-        ? [
-            {
-              id: "warranty",
-              title: t("warranty"),
-              icon: <GrCertificate />,
-              children: [
-                {
-                  id: "seriallist",
-                  title: t("serialList"),
-                  icon: <MdCreateNewFolder />,
-                  path: "/SerialList",
-                },
-
-                {
-                  id: "rma",
-                  title: t("RMA"),
-                  icon: <MdCreateNewFolder />,
-                  path: "/RMA",
-                },
-              ],
-            },
-
-            ...(can("AddService") || can("ServiceList")
-              ? [
+          {
+            id: "sale",
+            title: t("sale"),
+            icon: <FcSalesPerformance />,
+            children: [
+              ...(can("CreateSales")
+                ? [
                   {
-                    id: "service",
+                    id: "createsale",
+                    title: t("createSale"),
+                    icon: <MdCreateNewFolder />,
+                    path: "/NewSale",
+                  },
+
+                  {
+                    id: "SaleWithVat",
                     title: (
                       <div className="flex items-center gap-2">
-                        {t("Service")}
+                        {t("Sale With Vat")}
                         <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold animate-pulse">
                           NEW
                         </span>
                       </div>
                     ),
-                    icon: <GrServices />,
-                    children: [
-                      ...(can("AddService")
-                        ? [
-                            {
-                              id: "createService",
-                              title: t("Create Service"),
-                              path: "/CreateService",
-                              icon: <MdOutlineElectricalServices />,
-                            },
-                          ]
-                        : []),
-                      ...(can("ServiceList")
-                        ? [
-                            {
-                              id: "serviceList",
-                              title: t("ServiceList"),
-                              path: "/ServiceList",
-                              icon: <MdOutlineEditCalendar />,
-                            },
-                            {
-                              id: "serviceReport",
-                              title: t("Service report"),
-                              path: "/ServiceReport",
-                              icon: <MdAssessment />,
-                            },
-                          ]
-                        : []),
-                    ],
+                    icon: <CiMoneyCheck1 />,
+                    path: "/SaleWithVat",
+                  },
+                  ...(businessDetails.warranty !== "1"
+                    ? [
+                      {
+                        id: "possale",
+                        title: t("posSale"),
+                        icon: <MdCreateNewFolder />,
+                        path: "/PosSale",
+                      },
+                    ]
+                    : []),
+                ]
+                : []),
+
+              ...(can("ViewSales")
+                ? [
+                  {
+                    id: "salelist",
+                    title: t("saleList"),
+                    icon: <PiListStarFill />,
+                    path: "/SaleList",
                   },
                 ]
-              : []),
-            {
-              id: "quotation",
-              title: t("quotation"),
-              icon: <MdEditDocument />,
-              children: [
-                {
-                  id: "createquotation",
-                  title: t("createQuotation"),
-                  path: "/CreateQuotation",
-                  icon: <FaRegEdit />,
-                },
+                : []),
+              ...(can("ViewReturn")
+                ? [
+                  {
+                    id: "salereturnlist",
+                    title: t("saleReturnList"),
+                    icon: <IoListCircleOutline />,
+                    path: "/SaleReturnList",
+                  },
+                ]
+                : []),
+            ],
+          },
+        ]
+        : []),
 
-                {
-                  id: "quotationlist",
-                  title: t("quotationList"),
-                  path: "/QuotationList",
-                  icon: <MdOutlineEditCalendar />,
-                },
-              ],
-            },
-          ]
+
+      //Warranty & quotation
+      ...(businessDetails.warranty === "1"
+        ? [
+          {
+            id: "warranty",
+            title: t("warranty"),
+            icon: <GrCertificate />,
+            children: [
+              {
+                id: "seriallist",
+                title: t("serialList"),
+                icon: <MdCreateNewFolder />,
+                path: "/SerialList",
+              },
+
+              {
+                id: "rma",
+                title: t("RMA"),
+                icon: <MdCreateNewFolder />,
+                path: "/RMA",
+              },
+            ],
+          },
+
+          ...(can("AddService") || can("ServiceList")
+            ? [
+              {
+                id: "service",
+                title: (
+                  <div className="flex items-center gap-2">
+                    {t("Service")}
+                    <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold animate-pulse">
+                      NEW
+                    </span>
+                  </div>
+                ),
+                icon: <GrServices />,
+                children: [
+                  ...(can("AddService")
+                    ? [
+                      {
+                        id: "createService",
+                        title: t("Create Service"),
+                        path: "/CreateService",
+                        icon: <MdOutlineElectricalServices />,
+                      },
+                    ]
+                    : []),
+                  ...(can("ServiceList")
+                    ? [
+                      {
+                        id: "serviceList",
+                        title: t("ServiceList"),
+                        path: "/ServiceList",
+                        icon: <MdOutlineEditCalendar />,
+                      },
+                      {
+                        id: "serviceReport",
+                        title: t("Service report"),
+                        path: "/ServiceReport",
+                        icon: <MdAssessment />,
+                      },
+                    ]
+                    : []),
+                ],
+              },
+            ]
+            : []),
+          {
+            id: "quotation",
+            title: t("quotation"),
+            icon: <MdEditDocument />,
+            children: [
+              {
+                id: "createquotation",
+                title: t("createQuotation"),
+                path: "/CreateQuotation",
+                icon: <FaRegEdit />,
+              },
+
+              {
+                id: "quotationlist",
+                title: t("quotationList"),
+                path: "/QuotationList",
+                icon: <MdOutlineEditCalendar />,
+              },
+            ],
+          },
+        ]
+        : []),
+
+      ...(can("CreateSales") || can("ViewSales") || can("ViewReturn")
+        ? [
+          {
+            id: "Damage",
+            title: t("damage"),
+            icon: <FaSortAmountUp />,
+            children: [
+              {
+                id: "AddDamage",
+                title: t("addDamage"),
+                icon: <LiaSortAmountUpSolid />,
+                path: "/AddDamage",
+              },
+              {
+                id: "DamageList",
+                title: t("damageList"),
+                icon: <LiaSortAmountUpSolid />,
+                path: "/DamageList",
+              },
+            ],
+          },
+        ]
         : []),
 
       // Sale Order
       ...(businessDetails.saleOrder === 1
         ? [
-            {
-              id: "saleOrder",
-              title: "Sale Order",
-              icon: <FcSalesPerformance />,
-              children: [
-                {
-                  id: "createSaleOrder",
-                  title: "Create Order",
-                  icon: <MdCreateNewFolder />,
-                  path: "/createSaleOrder",
-                },
-                {
-                  id: "creatSaleOrderList",
-                  title: "Order List",
-                  icon: <CiViewList />,
-                  path: "/saleOrderList",
-                },
-              ],
-            },
-          ]
+          {
+            id: "saleOrder",
+            title: "Sale Order",
+            icon: <FcSalesPerformance />,
+            children: [
+              {
+                id: "createSaleOrder",
+                title: "Create Order",
+                icon: <MdCreateNewFolder />,
+                path: "/createSaleOrder",
+              },
+              {
+                id: "creatSaleOrderList",
+                title: "Order List",
+                icon: <CiViewList />,
+                path: "/saleOrderList",
+              },
+            ],
+          },
+        ]
         : []),
       // Expense
       ...(can("CreateExpense") ||
-      can("CreateExpenseTypes") ||
-      can("ExpenseReport")
+        can("CreateExpenseTypes") ||
+        can("ExpenseReport")
         ? [
-            {
-              id: "expense",
-              title: t("expense"),
-              icon: <FaSortAmountUp />,
-              children: [
-                ...(can("CreateExpense")
-                  ? [
-                      {
-                        id: "expense",
-                        title: t("expense"),
-                        icon: <MdAutoGraph />,
-                        path: "/Expense",
-                      },
-                    ]
-                  : []),
-                ...(can("CreateExpenseTypes")
-                  ? [
-                      {
-                        id: "expensetype",
-                        title: t("expenseType"),
-                        icon: <SiExpensify />,
-                        path: "/ExpenseType",
-                      },
-                    ]
-                  : []),
-                ,
-                ...(can("ExpenseReport")
-                  ? [
-                      {
-                        id: "ExpenseByType",
-                        title: t("expenseByType"),
-                        icon: <MdMergeType />,
-                        path: "/ExpenseByType",
-                      },
-                    ]
-                  : []),
-              ],
-            },
-          ]
+          {
+            id: "expense",
+            title: t("expense"),
+            icon: <FaSortAmountUp />,
+            children: [
+              ...(can("CreateExpense")
+                ? [
+                  {
+                    id: "expense",
+                    title: t("expense"),
+                    icon: <MdAutoGraph />,
+                    path: "/Expense",
+                  },
+                ]
+                : []),
+              ...(can("CreateExpenseTypes")
+                ? [
+                  {
+                    id: "expensetype",
+                    title: t("expenseType"),
+                    icon: <SiExpensify />,
+                    path: "/ExpenseType",
+                  },
+                ]
+                : []),
+              ,
+              ...(can("ExpenseReport")
+                ? [
+                  {
+                    id: "ExpenseByType",
+                    title: t("expenseByType"),
+                    icon: <MdMergeType />,
+                    path: "/ExpenseByType",
+                  },
+                ]
+                : []),
+            ],
+          },
+        ]
         : []),
 
       {
@@ -524,229 +531,205 @@ const MasterLayout = ({ children }) => {
 
       ...(isAdmin
         ? [
-            // Damage
-            ...(businessDetails.damage === 1
-              ? [
-                  {
-                    id: "Damage",
-                    title: t("damage"),
-                    icon: <FaSortAmountUp />,
-                    children: [
-                      {
-                        id: "AddDamage",
-                        title: t("addDamage"),
-                        icon: <LiaSortAmountUpSolid />,
-                        path: "/AddDamage",
-                      },
-                      {
-                        id: "DamageList",
-                        title: t("damageList"),
-                        icon: <LiaSortAmountUpSolid />,
-                        path: "/DamageList",
-                      },
-                    ],
-                  },
-                ]
-              : []),
-            // BankAccounts
-            {
-              id: "bankaccounts",
-              title: t("bankAccounts"),
-              icon: <CiBank />,
-              children: [
-                {
-                  id: "bankaccountspage",
-                  title: t("bankAccounts"),
-                  icon: <PiBankBold />,
-                  path: "/BankAccount",
-                },
-                {
-                  id: "balanceTransfer",
-                  title: t("balanceTransfer"),
-                  icon: <FaMoneyBillTrendUp />,
-                  path: "/BalanceTransfer",
-                },
-                {
-                  id: "Cheque",
-                  title: (
-                    <div className="flex items-center gap-2">
-                      {t("Cheque")}
-                      <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold animate-pulse">
-                        NEW
-                      </span>
-                    </div>
-                  ),
-                  icon: <CiMoneyCheck1 />,
-                  path: "/Cheque",
-                },
-                {
-                  id: "Transactions",
-                  title: t("Transactions"),
-                  icon: <FaMoneyBillTransfer />,
-                  path: "/Transactions",
-                },
-              ],
-            },
-            {
-              id: "investment",
-              title: (
-                <div className="flex items-center gap-2">
-                  {t("investment")}
-                  <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold animate-pulse">
-                    NEW
-                  </span>
-                </div>
-              ),
-              icon: <FaMoneyBillTrendUp />,
-              children: [
-                {
-                  id: "investorList",
-                  title: t("investorList"),
-                  icon: <GiTakeMyMoney />,
-                  path: "/InvestorList",
-                },
-              ],
-            },
+          // BankAccounts
+          {
+            id: "bankaccounts",
+            title: t("bankAccounts"),
+            icon: <CiBank />,
+            children: [
+              {
+                id: "bankaccountspage",
+                title: t("bankAccounts"),
+                icon: <PiBankBold />,
+                path: "/BankAccount",
+              },
+              {
+                id: "balanceTransfer",
+                title: t("balanceTransfer"),
+                icon: <FaMoneyBillTrendUp />,
+                path: "/BalanceTransfer",
+              },
+              {
+                id: "Cheque",
+                title: (
+                  <div className="flex items-center gap-2">
+                    {t("Cheque")}
+                    <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold animate-pulse">
+                      NEW
+                    </span>
+                  </div>
+                ),
+                icon: <CiMoneyCheck1 />,
+                path: "/Cheque",
+              },
+              {
+                id: "Transactions",
+                title: t("Transactions"),
+                icon: <FaMoneyBillTransfer />,
+                path: "/Transactions",
+              },
+            ],
+          },
+          {
+            id: "investment",
+            title: (
+              <div className="flex items-center gap-2">
+                {t("investment")}
+                <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold animate-pulse">
+                  NEW
+                </span>
+              </div>
+            ),
+            icon: <FaMoneyBillTrendUp />,
+            children: [
+              {
+                id: "investorList",
+                title: t("investorList"),
+                icon: <GiTakeMyMoney />,
+                path: "/InvestorList",
+              },
+            ],
+          },
 
-            // Team
-            {
-              id: "hr",
-              title: t("hr"),
-              icon: <RiTeamLine />,
-              children: [
-                {
-                  id: "AddTeamMember",
-                  title: t("team"),
-                  icon: <MdOutlineAccessibilityNew />,
-                  path: "/NewMember",
-                },
-                {
-                  id: "Srlist",
-                  title: t("srList"),
-                  icon: <MdOutlineAccessibilityNew />,
-                  path: "/srList",
-                },
+          // Team
+          {
+            id: "hr",
+            title: t("hr"),
+            icon: <RiTeamLine />,
+            children: [
+              {
+                id: "AddTeamMember",
+                title: t("team"),
+                icon: <MdOutlineAccessibilityNew />,
+                path: "/NewMember",
+              },
+              {
+                id: "Srlist",
+                title: t("srList"),
+                icon: <MdOutlineAccessibilityNew />,
+                path: "/srList",
+              },
 
-                {
-                  id: "role",
-                  title: t("role"),
-                  icon: <PiPlantDuotone />,
-                  path: "/Role",
-                },
-              ],
-            },
-            // Report
-            {
-              id: "report",
-              title: t("report"),
-              icon: <MdReportGmailerrorred />,
-              children: [
-                {
-                  id: "BusinessReport",
-                  title: t("businessReport"),
-                  icon: <TbBusinessplan />,
-                  path: "/BusinessReport",
-                },
-                {
-                  id: "SaleReport",
-                  title: t("saleReport"),
-                  icon: <MdOutlineAddShoppingCart />,
-                  path: "/SalsReport",
-                },
-                {
-                  id: "TopCoustomer",
-                  title: t("topCustomer"),
-                  icon: <FaUsers />,
-                  path: "/TopCoustomer",
-                },
-                {
-                  id: "customerreport",
-                  title: t("Customer Report"),
-                  icon: <GiStockpiles />,
-                  path: "/CustomerReport",
-                },
-                {
-                  id: "ReceivableReport",
-                  title: t("receivableReport"),
-                  icon: <GiTakeMyMoney />,
-                  path: "/ReceivableReport",
-                },
-                {
-                  id: "PayableReport",
-                  title: t("payableReport"),
-                  icon: <GiMoneyStack />,
-                  path: "/PayableReport",
-                },
-                // {
-                //   id: "LowProductList",
-                //   title: t("lowStock"),
-                //   icon: <AiOutlineStock />,
-                //   path: "/LowProductList",
-                // },
-                {
-                  id: "LowStockProductList",
-                  title: t("lowStockProductList"),
-                  icon: <AiOutlineStock />,
-                  path: "/LowStockProductList",
-                },
-                {
-                  id: "AlertProductList",
-                  title: t("alertProductList"),
-                  icon: <MdCrisisAlert />,
-                  path: "/AlertProductList",
-                },
-                {
-                  id: "SaleProductReport",
-                  title: t("saleProductReport"),
-                  icon: <MdProductionQuantityLimits />,
-                  path: "/SaleProductReport",
-                },
-                {
-                  id: "AccountPaymentReport",
-                  title: t("accountPaymentReport"),
-                  icon: <MdPayments />,
-                  path: "/AccountPaymentReport",
-                },
-                {
-                  id: "ExpenseReport",
-                  title: t("expenseReport"),
-                  icon: <AiOutlineStock />,
-                  path: "/ExpenseReport",
-                },
-                {
-                  id: "transactionreport",
-                  title: t("transactionReport"),
-                  icon: <TbTransactionBitcoin />,
-                  path: "/TransactionReport",
-                },
-                {
-                  id: "dalyreport",
-                  title: t("dailyReport"),
-                  icon: <AiOutlineStock />,
-                  path: "/DalyReport",
-                },
-                {
-                  id: "stockreport",
-                  title: t("stockReport"),
-                  icon: <GiStockpiles />,
-                  path: "/StockReport",
-                },
-                {
-                  id: "stocklist",
-                  title: t("StockList"),
-                  icon: <GiStockpiles />,
-                  path: "/StockList",
-                },
-              ],
-            },
+              {
+                id: "role",
+                title: t("role"),
+                icon: <PiPlantDuotone />,
+                path: "/Role",
+              },
+            ],
+          },
+          // Report
+          {
+            id: "report",
+            title: t("report"),
+            icon: <MdReportGmailerrorred />,
+            children: [
+              {
+                id: "BusinessReport",
+                title: t("businessReport"),
+                icon: <TbBusinessplan />,
+                path: "/BusinessReport",
+              },
+              {
+                id: "SaleReport",
+                title: t("saleReport"),
+                icon: <MdOutlineAddShoppingCart />,
+                path: "/SalsReport",
+              },
+              {
+                id: "TopCoustomer",
+                title: t("topCustomer"),
+                icon: <FaUsers />,
+                path: "/TopCoustomer",
+              },
+              {
+                id: "customerreport",
+                title: t("Customer Report"),
+                icon: <GiStockpiles />,
+                path: "/CustomerReport",
+              },
+              {
+                id: "ReceivableReport",
+                title: t("receivableReport"),
+                icon: <GiTakeMyMoney />,
+                path: "/ReceivableReport",
+              },
+              {
+                id: "PayableReport",
+                title: t("payableReport"),
+                icon: <GiMoneyStack />,
+                path: "/PayableReport",
+              },
+              // {
+              //   id: "LowProductList",
+              //   title: t("lowStock"),
+              //   icon: <AiOutlineStock />,
+              //   path: "/LowProductList",
+              // },
+              {
+                id: "LowStockProductList",
+                title: t("lowStockProductList"),
+                icon: <AiOutlineStock />,
+                path: "/LowStockProductList",
+              },
+              {
+                id: "AlertProductList",
+                title: t("alertProductList"),
+                icon: <MdCrisisAlert />,
+                path: "/AlertProductList",
+              },
+              {
+                id: "SaleProductReport",
+                title: t("saleProductReport"),
+                icon: <MdProductionQuantityLimits />,
+                path: "/SaleProductReport",
+              },
+              {
+                id: "AccountPaymentReport",
+                title: t("accountPaymentReport"),
+                icon: <MdPayments />,
+                path: "/AccountPaymentReport",
+              },
+              {
+                id: "ExpenseReport",
+                title: t("expenseReport"),
+                icon: <AiOutlineStock />,
+                path: "/ExpenseReport",
+              },
+              {
+                id: "transactionreport",
+                title: t("transactionReport"),
+                icon: <TbTransactionBitcoin />,
+                path: "/TransactionReport",
+              },
+              {
+                id: "dalyreport",
+                title: t("dailyReport"),
+                icon: <AiOutlineStock />,
+                path: "/DalyReport",
+              },
+              {
+                id: "stockreport",
+                title: t("stockReport"),
+                icon: <GiStockpiles />,
+                path: "/StockReport",
+              },
+              {
+                id: "stocklist",
+                title: t("StockList"),
+                icon: <GiStockpiles />,
+                path: "/StockList",
+              },
+            ],
+          },
 
-            {
-              id: "businesssetup",
-              title: t("businessSetting"),
-              icon: <CiSettings />,
-              path: "/BusinessSetting",
-            },
-          ]
+          {
+            id: "businesssetup",
+            title: t("businessSetting"),
+            icon: <CiSettings />,
+            path: "/BusinessSetting",
+          },
+        ]
         : []),
     ],
     [isAdmin, businessDetails?.warranty, lang],
@@ -816,10 +799,9 @@ const MasterLayout = ({ children }) => {
           to={data.path}
           onClick={handleNavClick}
           className={({ isActive }) =>
-            `flex items-center gap-3 p-3 rounded-3xl hover:bg-green-400 dark:hover:bg-green-600 hover:text-white cursor-pointer transition-colors ${
-              isActive
-                ? "bg-green-500 dark:bg-green-600 text-white"
-                : "text-gray-700 dark:text-gray-300"
+            `flex items-center gap-3 p-3 rounded-3xl hover:bg-green-400 dark:hover:bg-green-600 hover:text-white cursor-pointer transition-colors ${isActive
+              ? "bg-green-500 dark:bg-green-600 text-white"
+              : "text-gray-700 dark:text-gray-300"
             }`
           }
         >
@@ -836,11 +818,10 @@ const MasterLayout = ({ children }) => {
                 [data.id]: !prev[data.id],
               }))
             }
-            className={` flex items-center justify-between p-3 rounded-3xl hover:bg-green-400 dark:hover:bg-green-600 hover:text-white cursor-pointer transition-colors ${
-              hasActiveChild(data)
-                ? "bg-green-500 dark:bg-green-600 text-white"
-                : "text-gray-700 dark:text-gray-300"
-            }`}
+            className={` flex items-center justify-between p-3 rounded-3xl hover:bg-green-400 dark:hover:bg-green-600 hover:text-white cursor-pointer transition-colors ${hasActiveChild(data)
+              ? "bg-green-500 dark:bg-green-600 text-white"
+              : "text-gray-700 dark:text-gray-300"
+              }`}
           >
             <div className="flex gap-3 items-center">
               <span className="text-lg">{data.icon}</span>
@@ -858,9 +839,8 @@ const MasterLayout = ({ children }) => {
           </div>
           {data.children && (
             <div
-              className={`overflow-hidden transition-all ${
-                expandedItems[data.id] ? "max-h-96" : "max-h-0"
-              }`}
+              className={`overflow-hidden transition-all ${expandedItems[data.id] ? "max-h-96" : "max-h-0"
+                }`}
             >
               <div className="pl-5 py-1 space-y-0 overflow-y-auto max-h-[40vh] pb-4">
                 {data.children.map((child) => (
@@ -869,10 +849,9 @@ const MasterLayout = ({ children }) => {
                     to={child.path}
                     onClick={handleNavClick}
                     className={({ isActive }) =>
-                      `p-2 flex items-center gap-2 rounded-3xl hover:bg-green-400 dark:hover:bg-green-600 hover:text-white text-sm transition-colors ${
-                        isActive
-                          ? "bg-green-500 dark:bg-green-600 text-white font-medium"
-                          : "text-gray-600 dark:text-gray-400"
+                      `p-2 flex items-center gap-2 rounded-3xl hover:bg-green-400 dark:hover:bg-green-600 hover:text-white text-sm transition-colors ${isActive
+                        ? "bg-green-500 dark:bg-green-600 text-white font-medium"
+                        : "text-gray-600 dark:text-gray-400"
                       }`
                     }
                   >
@@ -891,9 +870,8 @@ const MasterLayout = ({ children }) => {
     <div className="flex w-full h-screen dark:bg-gray-900 transition-colors">
       {/* Sidebar */}
       <aside
-        className={`overflow-y-auto flex flex-col gap-1 bg-gray-50 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 h-screen transition-all duration-300 ${
-          openSidePanel ? "w-64 p-2" : "lg:w-16 w-0"
-        }`}
+        className={`overflow-y-auto flex flex-col gap-1 bg-gray-50 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 h-screen transition-all duration-300 ${openSidePanel ? "w-64 p-2" : "lg:w-16 w-0"
+          }`}
         id="no-print"
       >
         <div className="flex flex-col gap-1">
@@ -941,11 +919,10 @@ const MasterLayout = ({ children }) => {
                 <NavLink
                   to={data.path ?? ""}
                   onClick={() => handleNavClick(data.path)}
-                  className={`flex items-center justify-center w-10 h-10 rounded hover:bg-green-400 dark:hover:bg-green-600 hover:text-white cursor-pointer transition-colors ${
-                    hasActiveChild(data) || location.pathname === data.path
-                      ? "bg-green-500 dark:bg-green-600 text-white"
-                      : "text-gray-700 dark:text-gray-300"
-                  }`}
+                  className={`flex items-center justify-center w-10 h-10 rounded hover:bg-green-400 dark:hover:bg-green-600 hover:text-white cursor-pointer transition-colors ${hasActiveChild(data) || location.pathname === data.path
+                    ? "bg-green-500 dark:bg-green-600 text-white"
+                    : "text-gray-700 dark:text-gray-300"
+                    }`}
                 >
                   <span className="text-lg">{data.icon}</span>
                 </NavLink>
@@ -1030,11 +1007,10 @@ const MasterLayout = ({ children }) => {
               </button>
 
               <div
-                className={`fixed top-15 right-5 ${
-                  showProfileToolTip
-                    ? "opacity-100 scale-100"
-                    : "opacity-0 scale-95 pointer-events-none"
-                } bg-white dark:bg-gray-700 text-black dark:text-white rounded-xl shadow-lg px-4 py-3 z-30 transition-all`}
+                className={`fixed top-15 right-5 ${showProfileToolTip
+                  ? "opacity-100 scale-100"
+                  : "opacity-0 scale-95 pointer-events-none"
+                  } bg-white dark:bg-gray-700 text-black dark:text-white rounded-xl shadow-lg px-4 py-3 z-30 transition-all`}
               >
                 <div className="w-[250px] flex flex-col gap-2 items-center text-sm">
                   <div className="flex flex-col items-center w-full">

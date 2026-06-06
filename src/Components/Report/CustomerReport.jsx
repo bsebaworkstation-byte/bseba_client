@@ -283,11 +283,10 @@ const CustomerReport = () => {
                     {/* Balance */}
                     {showBalance && (
                       <td
-                        className={`global_td font-medium ${
-                          item?.contactDetails?.balance < 0
+                        className={`global_td font-medium ${item?.contactDetails?.balance < 0
                             ? "text-red-600"
                             : "text-green-600"
-                        }`}
+                          }`}
                       >
                         {item?.contactDetails?.balance ?? 0}
                       </td>
@@ -331,11 +330,10 @@ const CustomerReport = () => {
                 <button
                   onClick={() => setPage((p) => Math.max(p - 1, 1))}
                   disabled={page === 1}
-                  className={`px-4 py-2 rounded-r-md rounded-l-full ${
-                    page === 1
+                  className={`px-4 py-2 rounded-r-md rounded-l-full ${page === 1
                       ? "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
                       : "global_button"
-                  }`}
+                    }`}
                 >
                   {table("previous")}
                 </button>
@@ -348,11 +346,10 @@ const CustomerReport = () => {
                 <button
                   onClick={() => setPage((p) => p + 1)}
                   disabled={page >= Math.ceil(total / limit)}
-                  className={`px-4 py-2 rounded-l-md rounded-r-full ${
-                    page >= Math.ceil(total / limit)
+                  className={`px-4 py-2 rounded-l-md rounded-r-full ${page >= Math.ceil(total / limit)
                       ? "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
                       : "global_button"
-                  }`}
+                    }`}
                 >
                   {table("next")}
                 </button>

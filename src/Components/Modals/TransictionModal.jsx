@@ -73,7 +73,7 @@ const TransictionModal = ({ contact }) => {
       if (res.data.status === "Success") {
         const formatted = res.data.data.map((b) => ({
           value: b._id,
-          label: b.name,
+          label: `${b.name} (${b.balance})`,
           amount: 0,
           ...b,
         }));
@@ -112,9 +112,8 @@ const TransictionModal = ({ contact }) => {
         setCustomers(
           res.data.data.map((s) => ({
             value: s._id,
-            label: `${s.name} (${s.address}) (${
-              s.mobile
-            }) (${s?.balance?.toFixed(2)}) `,
+            label: `${s.name} (${s.address}) (${s.mobile
+              }) (${s?.balance?.toFixed(2)}) `,
             ...s,
           })),
         );
@@ -322,14 +321,12 @@ const TransictionModal = ({ contact }) => {
                 <button
                   type="button"
                   onClick={() => setSendSMS(!sendSMS)}
-                  className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors duration-300 ${
-                    sendSMS ? "bg-green-500" : "bg-gray-300"
-                  }`}
+                  className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors duration-300 ${sendSMS ? "bg-green-500" : "bg-gray-300"
+                    }`}
                 >
                   <span
-                    className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-300 ${
-                      sendSMS ? "translate-x-4" : "translate-x-1"
-                    }`}
+                    className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-300 ${sendSMS ? "translate-x-4" : "translate-x-1"
+                      }`}
                   />
                 </button>
               </div>
@@ -343,14 +340,12 @@ const TransictionModal = ({ contact }) => {
                 <button
                   type="button"
                   onClick={() => setCreateDiscount(!createDiscount)}
-                  className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors duration-300 ${
-                    createDiscount ? "bg-green-500" : "bg-gray-300"
-                  }`}
+                  className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors duration-300 ${createDiscount ? "bg-green-500" : "bg-gray-300"
+                    }`}
                 >
                   <span
-                    className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-300 ${
-                      createDiscount ? "translate-x-4" : "translate-x-1"
-                    }`}
+                    className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-300 ${createDiscount ? "translate-x-4" : "translate-x-1"
+                      }`}
                   />
                 </button>
               </div>
@@ -392,11 +387,10 @@ const TransictionModal = ({ contact }) => {
                             e.target.value,
                           )
                         }
-                        className={` w-40 rounded-sm outline-0 p-1.5 text-right ${
-                          account.amount > 0
-                            ? "border-2 border-green-500"
-                            : " border-red-500 border"
-                        }`}
+                        className={` w-40 rounded-sm outline-0 p-1.5 text-right ${account.amount > 0
+                          ? "border-2 border-green-500"
+                          : " border-red-500 border"
+                          }`}
                       />
                     </div>
                   );
@@ -415,7 +409,7 @@ const TransictionModal = ({ contact }) => {
                     classNamePrefix="react-select"
                     // onInputChange={(val) => setSearchSupplierKeyword(val)}
                     styles={getReactSelectStyles()}
-                    // isClearable
+                  // isClearable
                   />
                 </div>
               )}
@@ -435,11 +429,10 @@ const TransictionModal = ({ contact }) => {
                     }
                   }}
                   placeholder="Amount"
-                  className={` w-40 rounded-sm outline-0 p-1.5 text-right ${
-                    discountAmount > 0
-                      ? "border-2 border-green-500"
-                      : " border-red-500 border"
-                  }`}
+                  className={` w-40 rounded-sm outline-0 p-1.5 text-right ${discountAmount > 0
+                    ? "border-2 border-green-500"
+                    : " border-red-500 border"
+                    }`}
                 />
               </div>
             )
@@ -492,7 +485,7 @@ const TransictionModal = ({ contact }) => {
                   {" "}
                   {Number(selectedCustomer?.balance || 0) -
                     Number(totalPaid || 0) <
-                  0
+                    0
                     ? `${formTrans("receivable")}`
                     : `${formTrans("payable")}`}{" "}
                   :
@@ -500,7 +493,7 @@ const TransictionModal = ({ contact }) => {
                 <span>
                   {Math.abs(
                     Number(selectedCustomer?.balance || 0) -
-                      Number(totalPaid || 0),
+                    Number(totalPaid || 0),
                   ).toFixed(2)}
                 </span>
               </h1>
@@ -520,11 +513,10 @@ const TransictionModal = ({ contact }) => {
           <button
             type="submit"
             disabled={createDiscount && !discountAmount}
-            className={` col-span-2 w-full ${
-              createDiscount && !discountAmount
-                ? "border rounded-full bg-gray-400"
-                : "global_button"
-            }`}
+            className={` col-span-2 w-full ${createDiscount && !discountAmount
+              ? "border rounded-full bg-gray-400"
+              : "global_button"
+              }`}
           >
             {btn("create")}{" "}
             {createDiscount ? `${btn("discount")}` : `${btn("transaction")}`}
