@@ -70,6 +70,7 @@ const AddDamage = () => {
 
       if (res.data.status === "Success" && res.data.data.length > 0) {
         const productData = res.data.data[0];
+
         const product = {
           ...productData,
           value: productData._id,
@@ -142,9 +143,11 @@ const AddDamage = () => {
       );
       if (res.data.status === "Success") {
         const raowProducts = res.data.data;
-        // const availableProducts = raowProducts.filter((p) => p.qty > 0);
+        // remove product that manageStock is 0
+        const filteredProducts = raowProducts?.filter((product) => product.manageStock !== 0);
+
         setProducts(
-          raowProducts.map((p) => ({
+          filteredProducts.map((p) => ({
             value: p._id,
             label: `${p.name} (${p.Brands.name}) (${p.Categories.name
               }) (stock : ${p.manageStock === 0 ? "∞" : p.qty})(Barcode ${p.barcode
