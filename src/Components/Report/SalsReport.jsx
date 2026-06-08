@@ -242,7 +242,7 @@ const SalesReport = () => {
           <h1 className="global_heading">Sales Report Data</h1>
           <div className="flex justify-center items-center">
 
-            {["paid", "due", "profit", "date", "action",].map((name) => (
+            {["paid", "due", "profit", "date", "action"].map((name) => (
               <div id="no-print" key={name} className="inline-flex items-center mr-6">
                 <label
                   htmlFor={name}
@@ -394,8 +394,6 @@ const SalesReport = () => {
               </tfoot>
             )}
           </table>
-
-
         </div>
       </div>
     </div >
