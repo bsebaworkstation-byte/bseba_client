@@ -14,8 +14,26 @@ const SaleProductReport = () => {
   const [filterType, setFilterType] = useState("Today");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+
+  const [visibilities, setVisibilities] = useState({
+    profit: true,
+    price: true,
+    cost: true,
+    date: true,
+    quick: true,
+    from: true,
+    to: true
+  });
+
   const { setGlobalLoader } = loadingStore();
   const printRef = useRef(null);
+
+  const handleVisibitlies = (name, value) => {
+    setVisibilities(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   useEffect(() => {
     handleDateFilter("Today");
@@ -97,17 +115,41 @@ const SaleProductReport = () => {
   };
 
   return (
-    <section className="container global_container mx-auto">
+    <section className=" global_container mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <div>
           <h5 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
             Sale Product Report
           </h5>
         </div>
-        <div>
+        <div className="flex justify-center items-center">
+
+          {["price", "cost", "profit", "quick", "from", "to", "date"].map((name) => (
+            <div key={name} className="inline-flex items-center mr-6">
+              <label
+                htmlFor={name}
+                className="flex items-center gap-2 cursor-pointer select-none"
+              >
+                <input
+                  id={name}
+                  type="checkbox"
+                  checked={visibilities[name] || false}
+                  onChange={(e) =>
+                    handleVisibitlies(name, e.target.checked)
+                  }
+                  className="w-5 h-5 rounded cursor-pointer"
+                />
+
+                <span className="text-sm font-medium text-gray-700 capitalize">
+                  {name}
+                </span>
+              </label>
+            </div>
+          ))}
+
           <button
             onClick={handlePrint}
-            className="global_button_red flex items-center gap-2"
+            className="global_button_red flex items-center gap-2 ml-5"
           >
             <FaPrint /> Print Report
           </button>
@@ -116,7 +158,7 @@ const SaleProductReport = () => {
 
       <div ref={printRef} className="global_sub_container">
         <div className="grid grid-cols-1 md:grid-cols-12 mt-4 mb-6 gap-4 items-end">
-          <div className="md:col-span-3">
+          {visibilities.quick && <div className="md:col-span-3">
             <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">
               Quick Filter
             </label>
@@ -143,9 +185,9 @@ const SaleProductReport = () => {
                 ))}
               </select>
             </div>
-          </div>
+          </div>}
           <div className="md:col-span-6 md:col-start-7 flex items-center gap-2">
-            <div className="w-full relative">
+            {visibilities.from && <div className="w-full relative">
               <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">
                 From
               </label>
@@ -159,9 +201,9 @@ const SaleProductReport = () => {
                   className="global_input pl-10 py-1.5 w-full"
                 />
               </div>
-            </div>
+            </div>}
 
-            <div className="w-full relative">
+            {visibilities.to && <div className="w-full relative">
               <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">
                 To
               </label>
@@ -175,7 +217,7 @@ const SaleProductReport = () => {
                   className="global_input pl-10 py-1.5 w-full"
                 />
               </div>
-            </div>
+            </div>}
           </div>
         </div>
 
@@ -185,13 +227,13 @@ const SaleProductReport = () => {
             <thead className="global_thead">
               <tr>
                 <th className="global_th">#</th>
-                <th className="global_th">Date</th>
+                {visibilities.date && < th className="global_th">Date</th>}
                 <th className="global_th">Product Name</th>
                 <th className="global_th text-center">Qty</th>
-                <th className="global_th text-right">Unit Cost</th>
-                <th className="global_th text-right">Unit Price</th>
+                {visibilities.cost && <th className="global_th text-right">Unit Cost</th>}
+                {visibilities.price && <th className="global_th text-right">Unit Price</th>}
                 <th className="global_th text-right">Total Sales</th>
-                <th className="global_th text-right">Profit</th>
+                {visibilities.profit && <th className="global_th text-right">Profit</th>}
               </tr>
             </thead>
             <tbody className="global_tbody">
@@ -205,9 +247,9 @@ const SaleProductReport = () => {
                 reportData.map((item, index) => (
                   <tr key={item._id} className="global_tr hover:bg-gray-50">
                     <td className="global_td">{index + 1}</td>
-                    <td className="global_td whitespace-nowrap">
+                    {visibilities.date && <td className="global_td whitespace-nowrap">
                       {formatDate(item.CreatedDate)}
-                    </td>
+                    </td>}
                     <td className="global_td font-medium">
                       {item.productName}
                       <div className="text-xs text-gray-500 block md:hidden">
@@ -215,25 +257,25 @@ const SaleProductReport = () => {
                       </div>
                     </td>
                     <td className="global_td text-center">{item.qtySold}</td>
-                    <td className="global_td text-right">
+                    {visibilities.cost && <td className="global_td text-right">
                       {Number(item.unitCost).toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
-                    </td>
-                    <td className="global_td text-right">
+                    </td>}
+                    {visibilities.price && <td className="global_td text-right">
                       {Number(item.price).toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
-                    </td>
+                    </td>}
                     <td className="global_td text-right font-medium text-blue-700">
                       {Number(item.total).toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
                     </td>
-                    <td
+                    {visibilities.profit && <td
                       className={`global_td text-right font-bold ${item.profit >= 0 ? "text-green-600" : "text-red-600"
                         }`}
                     >
@@ -241,7 +283,7 @@ const SaleProductReport = () => {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
-                    </td>
+                    </td>}
                   </tr>
                 ))
               )}
@@ -252,38 +294,38 @@ const SaleProductReport = () => {
               <tfoot className="bg-gray-100 font-bold border-t-2 border-gray-300">
                 <tr className="global_tr">
                   <td
-                    colSpan="3"
+                    colSpan={visibilities.date ? 3 : 2}
                     className="global_td text-right text-gray-700 dark:text-gray-400 uppercase"
                   >
                     Total
                   </td>
                   <td className="global_td text-center">{totalQty}</td>
-                  <td className="global_td text-right text-gray-500 dark:text-gray-400">
+                  {visibilities.cost && <td className="global_td text-right text-gray-500 dark:text-gray-400">
                     {totalCost.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}
-                  </td>
-                  <td className="global_td text-right text-gray-500">-</td>
+                  </td>}
+                  {visibilities.price && <td className="global_td text-right text-gray-500">-</td>}
                   <td className="global_td text-right text-blue-800">
                     {totalSales.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}
                   </td>
-                  <td className="global_td text-right text-green-800">
+                  {visibilities.profit && <td className="global_td text-right text-green-800">
                     {totalProfit.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}
-                  </td>
+                  </td>}
                 </tr>
               </tfoot>
             )}
           </table>
         </div>
       </div>
-    </section>
+    </section >
   );
 };
 

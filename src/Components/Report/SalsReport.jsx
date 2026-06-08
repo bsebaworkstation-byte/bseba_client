@@ -49,9 +49,25 @@ const SalesReport = () => {
   const [period, setPeriod] = useState("");
   const [dataList, setDataList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [visibilities, setVisibilities] = useState({
+    profit: true,
+    due: true,
+    paid: true,
+    action: true,
+    date: true
+  });
+
   const { setGlobalLoader } = loadingStore();
   const navigate = useNavigate();
   const printRef = useRef(null);
+
+  const handleVisibitlies = (name, value) => {
+    setVisibilities(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
 
   // Fetch data from API
   const fetchData = async (start, end) => {
@@ -122,13 +138,34 @@ const SalesReport = () => {
   const handlePrint = () => {
     printElement(printRef, "Stock Report");
   };
-
   // Filter by search
   const filteredData = dataList.filter(
     (sale) =>
       sale.referenceNo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       sale.Customer[0]?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const totalQty = filteredData.reduce(
+    (acc, item) => acc + (item.qtySold || 0),
+    0
+  );
+  const totalSales = filteredData.reduce(
+    (acc, item) => acc + (item.total || 0),
+    0
+  );
+  const totalProfit = filteredData.reduce(
+    (acc, item) => acc + (item.profit || 0),
+    0
+  );
+  const totalPaid = filteredData.reduce(
+    (acc, item) => acc + (item.paid || 0),
+    0
+  );
+
+  // total due
+  const totalDue = filteredData.reduce((acc, item) => acc + (item.dueAmount || 0), 0)
+
+
 
   return (
     <div className="global_container">
@@ -203,14 +240,36 @@ const SalesReport = () => {
       <div ref={printRef} className="global_sub_container mt-5">
         <div className="flex justify-between items-center mb-5">
           <h1 className="global_heading">Sales Report Data</h1>
-          <div className="flex flex-wrap justify-between items-center gap-3">
+          <div className="flex justify-center items-center">
+
+            {["paid", "due", "profit", "date", "action",].map((name) => (
+              <div id="no-print" key={name} className="inline-flex items-center mr-6">
+                <label
+                  htmlFor={name}
+                  className="flex items-center gap-2 cursor-pointer select-none"
+                >
+                  <input
+                    id={name}
+                    type="checkbox"
+                    checked={visibilities[name] || false}
+                    onChange={(e) =>
+                      handleVisibitlies(name, e.target.checked)
+                    }
+                    className="w-5 h-5 rounded cursor-pointer"
+                  />
+
+                  <span className="text-sm font-medium text-gray-700 capitalize">
+                    {name}
+                  </span>
+                </label>
+              </div>
+            ))}
 
             <button
-              type="button"
               onClick={handlePrint}
-              className="global_button_red flex items-center gap-2 shrink-0 print:hidden"
+              className="global_button_red flex items-center gap-2 ml-5"
             >
-              <FaPrint /> Print
+              <FaPrint /> Print Report
             </button>
           </div>
         </div>
@@ -225,11 +284,11 @@ const SalesReport = () => {
                 <th className="global_th">Customer Name</th>
                 <th className="global_th">Sales Person</th>
                 <th className="global_th">Grand Total</th>
-                <th className="global_th">Paid</th>
-                <th className="global_th">Due Amount</th>
-                <th className="global_th">Profit</th>
-                <th className="global_th">Created Date</th>
-                <th className="global_th">Action</th>
+                {visibilities.paid && < th className="global_th">Paid</th>}
+                {visibilities.due && <th className="global_th">Due Amount</th>}
+                {visibilities.profit && <th className="global_th">Profit</th>}
+                {visibilities.date && <th className="global_th">Created Date</th>}
+                {visibilities.action && <th className="global_th">Action</th>}
               </tr>
             </thead>
 
@@ -261,16 +320,16 @@ const SalesReport = () => {
                     <td className="global_td">
                       {Intl.NumberFormat("en-IN").format(sale.grandTotal || 0)}
                     </td>
-                    <td className="global_td">
+                    {visibilities.paid && <td className="global_td">
                       {Intl.NumberFormat("en-IN").format(sale.paid || 0)}
-                    </td>
-                    <td className="global_td">
+                    </td>}
+                    {visibilities.due && <td className="global_td">
                       {Intl.NumberFormat("en-IN").format(sale.dueAmount || 0)}
-                    </td>
-                    <td className="global_td">
+                    </td>}
+                    {visibilities.profit && <td className="global_td">
                       {Intl.NumberFormat("en-IN").format(sale.profit || 0)}
-                    </td>
-                    <td className="global_td">
+                    </td>}
+                    {visibilities.date && <td className="global_td">
                       {(() => {
                         const d = new Date(sale.CreatedDate);
 
@@ -289,23 +348,57 @@ const SalesReport = () => {
 
                         return `${formattedDate} ${formattedTime}`;
                       })()}
-                    </td>
-                    <td className="global_td text-center">
+                    </td>}
+                    {visibilities.action && <td className="global_td text-center">
                       <button
                         onClick={() => navigate(`/Invoice/1/${sale._id}`)}
                         className="text-green-600 hover:underline text-center"
                       >
                         <AiOutlineEye size={18} />
                       </button>
-                    </td>
+                    </td>}
                   </tr>
                 ))
               )}
             </tbody>
+            {/* Table Footer with Totals */}
+            {filteredData.length > 0 && [visibilities.due, visibilities.paid, visibilities.profit].some(v => v === true) && (
+              <tfoot className="bg-gray-100 font-bold border-t-2 border-gray-300">
+                <tr className="global_tr">
+                  <td
+                    colSpan={5}
+                    className="global_td text-right font-bold text-gray-700 dark:text-gray-400 uppercase"
+                  >
+                    Total
+                  </td>
+
+                  {visibilities.paid && <td className="global_td text-center text-green-800">{totalPaid.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}</td>}
+                  {visibilities.due && < td className="global_td text-left text-blue-800">
+                    {totalDue.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+
+                  </td>}
+                  {visibilities.profit && <td colSpan={3} className="global_td text-left text-green-800">
+                    {totalProfit.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </td>}
+
+                </tr>
+              </tfoot>
+            )}
           </table>
+
+
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

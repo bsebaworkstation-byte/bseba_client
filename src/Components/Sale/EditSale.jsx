@@ -434,22 +434,15 @@ const EditSale = () => {
           amount: 0,
           ...b,
         }));
-        setBanks(formatted)
+        setBanks(formatted);
         const defaultAccount = formatted.find((a) => a.default === 1);
-        if (defaultAccount) {
-          // selectedAccounts এ সেট করা
-          setSelectedAccounts([defaultAccount]);
+        const unDefaultAccount = formatted.filter((a) => a.default !== 1);
 
-          // accounts থেকে default বাদ দেওয়া
-          const filtered = formatted.filter(
-            (a) => a.value !== defaultAccount.value,
-          );
-          setAccounts(filtered);
-        } else {
-          // যদি default না থাকে, সব accounts সেট করো
-          setAccounts(formatted);
-          setSelectedAccounts([]);
-        }
+        setCurrentSelectedAccounts((prev) => [defaultAccount])
+
+        setAccounts(unDefaultAccount);
+        setSelectedAccounts([]);
+
       }
     } catch (error) {
       ErrorToast("Failed to load accounts");
@@ -1046,14 +1039,12 @@ const EditSale = () => {
     [grandTotal, recivedAmount, paidAmount, selectedCustomer, oldGrandTotal, selectedCustomer?.balance, currentSelectedAccounts],
   );
 
-
   //  current due formula: (oldGrandTotal - paidAmount) + customer balance
   const balance = -selectedCustomer?.balance;
   const invoiceDue = useMemo(
     () => grandTotal - (paidAmount || 0),
     [grandTotal, paidAmount],
   );
-
 
   const thisInvoiceDue = useMemo(() => {
     const paids = currentSelectedAccounts.reduce((acc, a) => acc + a.amount, 0);
@@ -1088,18 +1079,40 @@ const EditSale = () => {
 
 
   const selectAccounts = (account) => {
+    alert("")
+    const removeDefaultAcount = [...selectAccounts, account].filter((acc) => acc.default !== 1);
+
     setSelectedAccounts((prev) => [...prev, account]);
     const updated = [...accounts];
+
+
+
+
     const filteredAccounts = updated.filter((a) => a.value !== account.value);
+
+
+
+
     setAccounts(filteredAccounts);
   };
 
   const unselectAccount = (account) => {
-    const updated = [...selectedAccounts];
+    const updated = [...currentSelectedAccounts];
     const filtered = updated.filter((a) => a.value !== account.value);
-    setSelectedAccounts(filtered);
-    setAccounts((prev) => [...prev, account]);
+
+
+    const hasSelectedAccounts = updated.find((val) => val.value === account.value);
+    console.log("hasSelectedAccounts", hasSelectedAccounts)
+    if (hasSelectedAccounts) {
+      const removed = accounts.filter((val) => val.value !== hasSelectedAccounts.value);
+      console.log('removed', removed)
+      setAccounts((prev) => [...prev, account]);
+    }
+
+    setCurrentSelectedAccounts(filtered)
+
   };
+
   const handleAccountAmountChange = (accountId, value) => {
     let newVal = value === "" ? 0 : Number(value);
 
@@ -2328,18 +2341,22 @@ const EditSale = () => {
             <h4>{formTrans("paymentBy")}</h4>
             <div className="flex flex-col gap-2">
               {currentSelectedAccounts?.map((account, index) => {
+                console.log('currentSelectedAccounts', currentSelectedAccounts)
                 return (
                   <div className="flex justify-between" key={index}>
                     <div className="flex items-center w-full justify-between">
-                      <h1 className="text-nowrap">{account.label}</h1>
-                      {selectedAccounts.length === 1 ? null : (
-                        <button
+                      <h1 className="text-nowrap">{account.label} {account.default === 1 ? <span className="text-[12px] font-bold text-green-500">(Default)</span> : ""} </h1>
+
+                      <>
+                        {currentSelectedAccounts.length > 1 && <button
                           className="pr-10"
                           onClick={() => unselectAccount(account)}
                         >
                           <IoMdCloseCircle size={20} color="red" />
-                        </button>
-                      )}
+                        </button>}
+
+                      </>
+
                     </div>
                     <input
                       type="number"
@@ -2379,6 +2396,13 @@ const EditSale = () => {
                       }
                       return [...prev, { ...account, amount: 0 }];
                     });
+                    const hasSelectedAccounts = accounts.find((val) => val.value === account.value);
+                    console.log("hasSelectedAccounts", hasSelectedAccounts)
+                    if (hasSelectedAccounts) {
+                      const removed = accounts.filter((val) => val.value !== hasSelectedAccounts.value);
+                      console.log('removed', removed)
+                      setAccounts(removed);
+                    }
                   }}
                   placeholder="Select More Account"
                   classNamePrefix="react-select"
